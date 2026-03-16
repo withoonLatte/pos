@@ -56,6 +56,47 @@
         <p class="text-sm text-gray-400 mt-2">Connecting to Firebase</p>
     </div>
 
+    <!-- View: Login -->
+    <div id="view-login" class="view-section h-screen w-screen bg-gray-100 flex items-center justify-center fixed inset-0 z-[200]">
+        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm border border-gray-100">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-gradient rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg text-white">
+                    <img src="qrcode-menu.png" class="w-10 h-10 object-contain invert" alt="Logo" onerror="this.outerHTML='<i class=\'fa-solid fa-store text-4xl\'></i>'">
+                </div>
+                <h1 class="text-2xl font-bold text-gray-800">เข้าสู่ระบบ CDZ POS</h1>
+                <p class="text-sm text-gray-500 mt-1">กรุณากรอกข้อมูลเพื่อเข้าใช้งานระบบ</p>
+            </div>
+
+            <div id="login-error" class="hidden bg-red-50 text-red-500 p-3 rounded-lg text-sm mb-4 text-center border border-red-100 font-medium">
+                <i class="fa-solid fa-circle-exclamation mr-1"></i> <span id="login-error-text">ชื่อผู้ใช้งาน หรือ รหัสผ่านไม่ถูกต้อง!</span>
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อผู้ใช้งาน</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <input type="text" id="login-username" required class="w-full pl-10 p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-cyan-300 outline-none transition bg-gray-50 focus:bg-white" placeholder="Username">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">รหัสผ่าน</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        <input type="password" id="login-password" required class="w-full pl-10 p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-cyan-300 outline-none transition bg-gray-50 focus:bg-white" placeholder="Password">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-gradient hover:opacity-90 text-white font-bold py-3.5 rounded-xl shadow-md transition transform hover:scale-[1.02]">
+                    เข้าสู่ระบบ <i class="fa-solid fa-arrow-right-to-bracket ml-1"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
     <aside id="main-sidebar" class="hidden md:flex flex-col z-50 h-full border-r shadow-sm sidebar-bg sidebar-transition w-64 shrink-0">
         <div class="h-14 flex items-center justify-between px-4 border-b border-gray-700 font-bold text-white shrink-0">
             <div class="flex items-center sidebar-text text-lg overflow-hidden whitespace-nowrap">
@@ -85,7 +126,12 @@
                 <h1 id="header-title" class="text-lg font-bold tracking-wide text-gray-800">ระบบการขาย (POS)</h1>
             </div>
             <div class="flex items-center gap-3">
-                <button onclick="installDemoData()" class="bg-red-50 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center"><i class="fa-solid fa-rotate-left mr-1"></i> ล้างข้อมูล/ลง Demo</button>
+                <span class="text-sm font-medium text-gray-600 hidden md:inline-block">
+                    <i class="fa-solid fa-user-circle mr-1 text-emerald-500"></i> 
+                    <span id="header-staff-name" class="font-bold">Admin</span> 
+                    <span id="header-staff-role" class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full ml-1 border border-emerald-200">Manager</span>
+                </span>
+                <button onclick="handleLogout()" class="bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-500 border border-gray-200 hover:border-red-200 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center"><i class="fa-solid fa-right-from-bracket mr-1"></i> ออกจากระบบ</button>
             </div>
         </header>
 
@@ -269,6 +315,7 @@
 
         <div id="view-settings" class="view-section p-2 md:p-4 overflow-y-auto">
             <div class="max-w-4xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- ตั้งค่าร้านค้า และ โลโก้ -->
                 <div class="bg-white rounded-xl border shadow-sm h-fit">
                     <div class="p-4 border-b bg-gray-50 font-bold text-gray-800"><i class="fa-solid fa-shop mr-2 text-cyan-600"></i> ตั้งค่าร้านค้า</div>
                     <form id="settings-form" class="p-4 space-y-5">
@@ -297,23 +344,26 @@
                     </form>
                 </div>
                 
+                <!-- จัดการพนักงาน Staff -->
                 <div class="bg-white rounded-xl border shadow-sm h-fit">
-                    <div class="p-4 border-b bg-gray-50 font-bold text-gray-800"><i class="fa-solid fa-users mr-2 text-cyan-600"></i> จัดการพนักงาน (Staff)</div>
+                    <div class="p-4 border-b bg-gray-50 font-bold text-gray-800"><i class="fa-solid fa-users mr-2 text-cyan-600"></i> จัดการพนักงาน (Staff / Members)</div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm border-b min-w-[350px]">
                             <thead class="bg-gray-100 text-gray-600">
                                 <tr><th class="p-3 pl-4">ชื่อ (แสดงในบิล)</th><th class="p-3">Username</th><th class="p-3 text-center">จัดการ</th></tr>
                             </thead>
-                            <tbody id="admin-members-table"></tbody>
+                            <tbody id="admin-members-table">
+                                <!-- JS Injected -->
+                            </tbody>
                         </table>
                     </div>
                     <form id="member-form" onsubmit="saveMemberData(event)" class="p-4 bg-gray-50 flex flex-col gap-3">
                         <h4 class="text-sm font-bold text-gray-700 mb-1 border-b pb-2">เพิ่มพนักงานใหม่</h4>
                         <div class="grid grid-cols-2 gap-3">
                             <div><label class="block text-xs text-gray-500 mb-1">ชื่อ-นามสกุล (แสดงในบิล)</label><input type="text" id="mem_name" required class="w-full p-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-cyan-300"></div>
-                            <div><label class="block text-xs text-gray-500 mb-1">สิทธิ์การใช้งาน</label><select id="mem_role" class="w-full p-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-cyan-300"><option value="Staff">พนักงานทั่วไป</option><option value="Manager">ผู้จัดการ</option></select></div>
+                            <div><label class="block text-xs text-gray-500 mb-1">สิทธิ์การใช้งาน</label><select id="mem_role" class="w-full p-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-cyan-300"><option value="Staff">พนักงานทั่วไป (Staff)</option><option value="Manager">ผู้จัดการ (Manager)</option></select></div>
                             <div><label class="block text-xs text-gray-500 mb-1">Username (ใช้ล็อกอิน)</label><input type="text" id="mem_username" required class="w-full p-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-cyan-300"></div>
-                            <div><label class="block text-xs text-gray-500 mb-1">รหัสผ่าน</label><input type="text" id="mem_password" required class="w-full p-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-cyan-300"></div>
+                            <div><label class="block text-xs text-gray-500 mb-1">รหัสผ่าน (Password)</label><input type="password" id="mem_password" required class="w-full p-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-cyan-300"></div>
                         </div>
                         <button type="submit" class="w-full bg-cyan-600 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-md hover:bg-cyan-700 transition mt-2"><i class="fa-solid fa-user-plus mr-1"></i> เพิ่มพนักงาน</button>
                     </form>
@@ -339,6 +389,55 @@
                 <button onclick="submitCustomerOrder()" class="bg-gradient hover:opacity-90 text-white px-6 py-3.5 rounded-2xl font-bold shadow-lg transition flex items-center shrink-0">
                     สั่งอาหาร (<span id="customer-cart-count">0</span>)
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View: Customer Display -->
+    <div id="view-customer_display" class="view-section h-screen w-screen bg-gray-100 hidden relative overflow-hidden flex-col z-[100] fixed inset-0">
+        <div class="flex flex-col h-full bg-white shadow-xl overflow-hidden border">
+            <div class="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white p-6 text-center shadow-sm z-10 shrink-0">
+                <h1 class="text-3xl md:text-4xl font-bold tracking-wide drop-shadow-md">รายการอาหาร (Your Order)</h1>
+            </div>
+            
+            <div class="flex flex-1 bg-gray-100 overflow-hidden relative">
+                <div class="w-1/2 flex flex-col items-center justify-center p-6 relative z-10 shadow-[5px_0_20px_rgba(0,0,0,0.08)] bg-cover bg-center border-r border-gray-200">
+                    <div id="cd-logo-state" class="flex flex-col items-center justify-center text-gray-800 text-center w-full h-full my-auto">
+                        <img id="cd-logo-img" src="" class="hidden max-w-[200px] max-h-[200px] object-contain animate-zoom drop-shadow-2xl mb-6 p-4 rounded-3xl" alt="Shop Logo">
+                        <i id="cd-logo-icon" class="fa-solid fa-store text-6xl text-emerald-500 animate-zoom mb-6"></i>
+                        <h2 id="cd-shop-name-display" class="text-3xl md:text-4xl font-bold tracking-wider drop-shadow-md text-emerald-600">CDZ POS</h2>
+                        <p class="text-lg text-gray-500 mt-3 font-medium">กำลังรอรับออเดอร์...</p>
+                    </div>
+                    
+                    <div id="cd-qr-state" class="hidden flex-col items-center justify-center text-gray-800 w-full h-full">
+                        <div class="flex flex-col items-center my-auto">
+                            <h2 class="text-3xl md:text-4xl font-bold mb-2 drop-shadow-md text-center text-cyan-600">สแกนเพื่อชำระเงิน</h2>
+                            <p class="text-lg md:text-xl text-gray-500 mb-6 font-medium tracking-wide">PromptPay / Mobile Banking</p>
+                            
+                            <div class="bg-white p-5 rounded-3xl shadow-2xl mb-6 transform hover:scale-105 transition duration-300 border-2 border-dashed border-cyan-300">
+                                <img id="cd-qr-image" src="" class="w-52 h-52 md:w-64 md:h-64 object-contain mx-auto mix-blend-multiply" alt="QR Code">
+                            </div>
+                            
+                            <p class="text-4xl md:text-5xl font-extrabold text-emerald-600 drop-shadow-md bg-emerald-50 px-6 py-2 rounded-full border border-emerald-100">฿<span id="cd-qr-total">0.00</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-1/2 flex flex-col h-full bg-white z-20 relative">
+                    <div class="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50/50" id="cd-main-area">
+                        <div id="cd-cart-items-container" class="space-y-2"></div>
+                    </div>
+                    
+                    <div class="bg-white border-t border-gray-100 p-4 md:p-6 shadow-[0_-10px_20px_rgba(0,0,0,0.02)] shrink-0">
+                        <div class="flex justify-between items-center bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                            <div>
+                                <span class="block text-xl font-bold text-gray-600">ยอดรวม</span>
+                                <span class="block text-xs font-medium text-gray-400">Total Amount</span>
+                            </div>
+                            <span class="text-4xl md:text-5xl font-extrabold text-emerald-600 drop-shadow-sm">฿<span id="cd-total">0.00</span></span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -515,6 +614,28 @@
         </div>
     </div>
 
+    <!-- Modal รายละเอียดใบเสร็จ -->
+    <div id="modal-receipt-details" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[110] backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl relative flex flex-col max-h-[85vh] overflow-hidden">
+            <div class="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white p-4 flex justify-between items-center shrink-0">
+                <h3 class="text-lg font-bold"><i class="fa-solid fa-file-lines mr-2"></i> รายละเอียดใบเสร็จ <span id="rd-id"></span></h3>
+                <button type="button" onclick="closeModal('modal-receipt-details')" class="text-white hover:text-red-200 transition"><i class="fa-solid fa-xmark fa-lg"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 bg-gray-50 text-sm">
+                <div class="flex justify-between border-b pb-2 mb-2 text-gray-500">
+                    <span>วันที่: <span id="rd-date" class="font-medium text-gray-800"></span></span>
+                    <span>โต๊ะ: <span id="rd-table" class="font-medium text-gray-800"></span></span>
+                </div>
+                <div id="rd-items" class="space-y-2 mb-4 mt-2"></div>
+                <div class="border-t border-dashed border-gray-300 pt-3 flex justify-between items-center text-lg mt-4">
+                    <span class="font-bold text-gray-700">ยอดรวมทั้งหมด:</span>
+                    <span id="rd-total" class="font-extrabold text-emerald-600">฿0.00</span>
+                </div>
+                <div class="text-right mt-2 text-xs text-gray-400">ชำระผ่าน: <span id="rd-method" class="font-bold text-gray-500"></span></div>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -531,7 +652,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = 'cdz-pos-app';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'cdz-pos-app';
         
         const publicPath = (colName) => collection(db, 'artifacts', appId, 'public', 'data', colName);
         
@@ -551,8 +672,18 @@
         let unsubscribeListeners = [];
         const initAuth = async () => {
             try { 
-                await signInAnonymously(auth); 
-            } catch (err) { console.error("Auth error", err); }
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } catch (tokenErr) {
+                        console.warn("พบปัญหา Custom Token ไม่ตรงกัน (มีการใช้ Firebase Config ภายนอก) ระบบจะสลับไปใช้ Anonymous Auth แทน");
+                        await signInAnonymously(auth);
+                    }
+                } else {
+                    await signInAnonymously(auth); 
+                }
+            } 
+            catch (err) { console.error("Auth error", err); }
         };
 
         onAuthStateChanged(auth, (user) => {
@@ -561,6 +692,7 @@
 
         function syncCartToLocal() {
             localStorage.setItem('pos_current_cart', JSON.stringify(window.posState.cart));
+            if(window.posState.currentView === 'customer_display') window.updateCustomerDisplay();
         }
 
         window.onload = () => {
@@ -573,12 +705,78 @@
             if(document.getElementById('receipt-end-date')) document.getElementById('receipt-end-date').value = filterEndDate;
 
             const urlParams = new URLSearchParams(window.location.search);
-            const viewParam = urlParams.get('view') || 'pos';
+            const viewParam = urlParams.get('view');
             
             if (viewParam === 'customer') {
                 window.posState.currentTableId = urlParams.get('table_id') || "1";
+                showView('customer');
+            } else if (viewParam === 'customer_display') {
+                showView('customer_display');
+            } else {
+                // Check Login Status
+                const isLoggedIn = localStorage.getItem('pos_logged_in');
+                if (!isLoggedIn) {
+                    showView('login');
+                } else {
+                    showView(viewParam || 'pos');
+                }
             }
-            showView(viewParam);
+            updateStaffUI();
+        };
+
+        window.handleLogin = (e) => {
+            e.preventDefault();
+            const userVal = document.getElementById('login-username').value.trim();
+            const passVal = document.getElementById('login-password').value.trim();
+            const errBox = document.getElementById('login-error');
+            
+            if (userVal.toLowerCase() === 'admin' && passVal === '1234') {
+                errBox.classList.add('hidden');
+                localStorage.setItem('pos_logged_in', 'true');
+                localStorage.setItem('pos_staff_name', 'Administrator');
+                localStorage.setItem('pos_staff_role', 'Manager');
+                document.getElementById('login-username').value = '';
+                document.getElementById('login-password').value = '';
+                updateStaffUI();
+                showView('pos');
+                return;
+            }
+
+            const member = window.posState.members.find(m => m.username === userVal && m.password === passVal);
+            if (member) {
+                errBox.classList.add('hidden');
+                localStorage.setItem('pos_logged_in', 'true');
+                localStorage.setItem('pos_staff_name', member.name);
+                localStorage.setItem('pos_staff_role', member.role);
+                document.getElementById('login-username').value = '';
+                document.getElementById('login-password').value = '';
+                updateStaffUI();
+                showView('pos');
+            } else {
+                errBox.classList.remove('hidden');
+            }
+        };
+
+        window.handleLogout = () => {
+            localStorage.removeItem('pos_logged_in');
+            localStorage.removeItem('pos_staff_name');
+            localStorage.removeItem('pos_staff_role');
+            showView('login');
+        };
+
+        window.updateStaffUI = () => {
+            const name = localStorage.getItem('pos_staff_name') || 'Admin';
+            const role = localStorage.getItem('pos_staff_role') || 'Manager';
+            const nameEl = document.getElementById('header-staff-name');
+            const roleEl = document.getElementById('header-staff-role');
+            if(nameEl) nameEl.innerText = name;
+            if(roleEl) roleEl.innerText = role;
+            
+            const adminOnlyMenus = ['nav-admin', 'nav-products', 'nav-tables', 'nav-settings'];
+            adminOnlyMenus.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.style.display = role === 'Manager' ? 'flex' : 'none';
+            });
         };
 
         function setupRealtimeListeners() {
@@ -648,13 +846,15 @@
             const targetView = document.getElementById(`view-${viewId}`);
             if(targetView) { 
                 targetView.classList.add('active'); 
-                if(viewId !== 'customer') targetView.classList.add('flex'); 
+                if(viewId !== 'customer' && viewId !== 'customer_display' && viewId !== 'login') {
+                    targetView.classList.add('flex'); 
+                }
             }
             
             const navBtn = document.getElementById(`nav-${viewId}`);
             if(navBtn) navBtn.classList.add('sidebar-active');
             
-            if (viewId === 'customer') {
+            if (viewId === 'customer' || viewId === 'customer_display' || viewId === 'login') {
                 document.getElementById('main-sidebar').classList.add('hidden');
                 document.getElementById('main-header').classList.add('hidden');
                 document.getElementById('main-content').classList.add('hidden');
@@ -673,6 +873,7 @@
             if(viewId === 'tables') renderTablesAdmin();
             if(viewId === 'settings') renderMembersAdmin();
             if(viewId === 'customer') { renderCustomerView(); renderCustomerCart(); }
+            if(viewId === 'customer_display') window.updateCustomerDisplay();
         }
 
         window.toggleSidebar = () => { document.getElementById('main-sidebar').classList.toggle('sidebar-collapsed'); };
@@ -941,6 +1142,7 @@
         };
 
         window.closeModal = (id) => { 
+            if(id === 'modal-checkout') localStorage.removeItem('pos_show_qr');
             document.getElementById(id).classList.add('hidden'); 
             document.getElementById(id).classList.remove('flex'); 
         };
@@ -988,26 +1190,36 @@
             document.getElementById('checkout-buttons').classList.add('hidden');
             const ppSec = document.getElementById('pp-section');
             ppSec.classList.remove('hidden'); ppSec.classList.add('flex');
+            
+            // สั่งให้จอฝั่งลูกค้าแสดง QR Code
+            localStorage.setItem('pos_show_qr', JSON.stringify({ url: qrUrl, total: total.toFixed(2) }));
+            if(window.posState.currentView === 'customer_display') window.updateCustomerDisplay();
         };
         
         window.hidePPSection = () => {
             document.getElementById('pp-section').classList.add('hidden'); document.getElementById('pp-section').classList.remove('flex');
             document.getElementById('checkout-buttons').classList.remove('hidden');
+            localStorage.removeItem('pos_show_qr');
+            if(window.posState.currentView === 'customer_display') window.updateCustomerDisplay();
         };
 
         window.processCheckout = async (method) => {
             const tableId = String(window.posState.currentTableId);
             let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
             
-            let received = total; let change = 0;
+            let received = total;
+            let change = 0;
             if (method === 'cash') {
                 received = parseFloat(document.getElementById('cash-received').value) || total;
                 change = received - total;
             }
 
             const newOrder = {
-                table_id: tableId, total: total, status: method === 'pending' ? 'pending' : 'paid',
-                payment_method: method, created_at: new Date().toISOString(),
+                table_id: tableId,
+                total: total,
+                status: method === 'pending' ? 'pending' : 'paid',
+                payment_method: method,
+                created_at: new Date().toISOString(),
                 items: window.posState.cart.map(i => ({...i, status: 'pending'}))
             };
 
@@ -1049,9 +1261,15 @@
                     window.posState.currentTableId = "0";
                 };
 
-                if (isPrintChecked && method !== 'pending') window.printReceipt(finalOrderId, printItems, total, method, received, change, finishCheckout);
-                else finishCheckout();
-            } catch (e) { Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้: ' + e.message, 'error'); }
+                if (isPrintChecked && method !== 'pending') {
+                    window.printReceipt(finalOrderId, printItems, total, method, received, change, finishCheckout);
+                } else {
+                    finishCheckout();
+                }
+            } catch (e) {
+                console.error(e);
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้: ' + e.message, 'error');
+            }
         };
 
         window.printReceipt = (orderId, items, total, method, received, change, callback) => {
@@ -1062,13 +1280,15 @@
             let shopName = window.posState.settings.shop_name || 'CDZ POS';
             let shopLogo = window.posState.settings.shop_logo || '';
             let receiptFooter = window.posState.settings.receipt_footer ? window.posState.settings.receipt_footer.replace(/\n/g, '<br>') : "ขอบคุณที่ใช้บริการ<br>Thank You";
-            let staffName = 'พนักงาน';
+            let staffName = localStorage.getItem('pos_staff_name') || 'พนักงาน';
 
             let logoHtml = shopLogo ? `<img src="${shopLogo}" style="max-width: 80%; max-height: 80px; margin: 0 auto 5px; display: block; object-fit: contain;">` : '';
             
             let html = `<div style="text-align: center; margin-bottom: 10px; padding-top: 10px;">${logoHtml}<h2 style="margin:0; font-size: 18px; font-weight: bold;">${shopName}</h2><p style="margin:0; font-size: 12px; color: #555;">ใบเสร็จรับเงิน / Receipt</p><p style="margin:0; font-size: 12px; border-bottom: 1px dashed #ccc; padding-bottom: 5px;">วันที่: ${date}</p></div><div style="font-size: 13px; margin-bottom: 5px; font-weight: bold;">บิล #: ${String(orderId).substring(0, 6)}</div><div style="font-size: 13px; margin-bottom: 5px;">พนักงาน: ${staffName}</div><table style="width: 100%; font-size: 13px; border-collapse: collapse; margin-bottom: 10px;"><tbody>`;
             
-            items.forEach(item => { html += `<tr><td style="padding: 3px 0;">${item.name} <br><small style="color: #666;">x${item.qty}</small></td><td style="text-align: right; vertical-align: bottom; padding: 3px 0; font-weight: bold;">${(item.price * item.qty).toFixed(2)}</td></tr>`; });
+            items.forEach(item => { 
+                html += `<tr><td style="padding: 3px 0;">${item.name} <br><small style="color: #666;">x${item.qty}</small></td><td style="text-align: right; vertical-align: bottom; padding: 3px 0; font-weight: bold;">${(item.price * item.qty).toFixed(2)}</td></tr>`; 
+            });
             
             html += `</tbody></table><div style="border-top: 1px dashed #ccc; padding-top: 5px; margin-bottom: 10px;"><div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px;"><span>ยอดรวมสุทธิ</span><span>฿${total.toFixed(2)}</span></div>`;
             html += `<div style="display: flex; justify-content: space-between; font-size: 12px; color: #555; margin-top: 5px;"><span>ชำระโดย:</span><span>${payMethodText}</span></div>`;
@@ -1110,8 +1330,10 @@
                     }
                 });
             });
+            
             if(html === '') html = '<div class="col-span-full text-center text-gray-400 py-20 text-lg"><i class="fa-solid fa-check-circle mb-2 text-5xl block opacity-20"></i>เคลียร์ทุกออเดอร์แล้ว เยี่ยมมาก!</div>';
             grid.innerHTML = html;
+
             const badge = document.getElementById('nav-kitchen-badge');
             if(badge) { badge.innerText = pendingItemsCount; badge.classList.toggle('hidden', pendingItemsCount === 0); }
         }
