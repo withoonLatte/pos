@@ -396,7 +396,14 @@
         import { getFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // แก้ไขข้อผิดพลาด SyntaxError จาก PHP tag โดยใช้ตัวแปรจากสภาพแวดล้อมโดยตรง
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const firebaseConfig = {
+  apiKey: "AIzaSyAhdAsDQm78kBfHVTZWf5Kkf_LTW3pJxNA",
+  authDomain: "cdz-pos-8a237.firebaseapp.com",
+  projectId: "cdz-pos-8a237",
+  storageBucket: "cdz-pos-8a237.firebasestorage.app",
+  messagingSenderId: "453232621158",
+  appId: "1:453232621158:web:5c27bfe44bf98fbe4ddfa7"
+};
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
