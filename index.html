@@ -131,8 +131,15 @@
 
         <div id="view-admin" class="view-section p-2 md:p-4 overflow-y-auto">
             <div class="bg-white rounded-xl shadow-sm border mb-6 flex flex-col overflow-hidden">
-                <div class="p-4 border-b bg-gray-50 font-bold text-gray-800 flex justify-between">
-                    <span><i class="fa-solid fa-chart-simple mr-2 text-emerald-500"></i> สรุปยอดขายรวม</span>
+                <div class="p-4 border-b bg-gray-50 font-bold text-gray-800 flex flex-wrap justify-between items-center gap-2">
+                    <span class="flex items-center"><i class="fa-solid fa-chart-simple mr-2 text-emerald-500"></i> สรุปยอดขายรวม</span>
+                    <div class="flex flex-wrap gap-2 items-center text-sm font-normal">
+                        <input type="date" id="admin-start-date" class="p-1.5 border rounded outline-none text-gray-600">
+                        <span>ถึง</span>
+                        <input type="date" id="admin-end-date" class="p-1.5 border rounded outline-none text-gray-600">
+                        <button onclick="renderAdminDashboard()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1.5 rounded transition">ค้นหา</button>
+                        <button onclick="exportSales()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded transition flex items-center"><i class="fa-solid fa-file-excel mr-1"></i> ส่งออก Excel</button>
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 lg:grid-cols-4 text-center divide-x divide-y lg:divide-y-0 divide-gray-100 bg-white">
                     <div class="p-5 border-t-4 border-t-emerald-500 bg-emerald-50/20">
@@ -175,18 +182,24 @@
 
         <div id="view-products" class="view-section p-2 md:p-4 overflow-y-auto">
             <div class="bg-white rounded-xl border shadow-sm mb-6 flex flex-col">
-                <div class="p-4 border-b flex justify-between items-center bg-gray-50 gap-2 shrink-0">
+                <div class="p-4 border-b flex justify-between items-center bg-gray-50 gap-2 shrink-0 flex-wrap">
                     <h2 class="font-bold text-lg text-gray-800"><i class="fa-solid fa-boxes-stacked mr-2 text-emerald-500"></i> จัดการสินค้า / เมนู</h2>
                     <div class="flex gap-2">
+                        <button onclick="document.getElementById('import_csv_input').click()" class="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-gray-50 transition flex items-center"><i class="fa-solid fa-file-import mr-1.5"></i> นำเข้า CSV</button>
+                        <button onclick="exportProducts()" class="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-gray-50 transition flex items-center"><i class="fa-solid fa-file-export mr-1.5"></i> ส่งออก CSV</button>
                         <button onclick="openProductModal()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition"><i class="fa-solid fa-plus mr-1"></i> เพิ่มสินค้า</button>
+                        <input type="file" id="import_csv_input" accept=".csv" class="hidden" onchange="handleImportProductsCSV(event)">
                     </div>
                 </div>
                 <div class="overflow-x-auto p-4">
                     <table class="w-full text-left text-sm border rounded-lg overflow-hidden min-w-[600px]">
                         <thead class="bg-gray-100 text-gray-700 border-b">
                             <tr>
+                                <th class="p-3 w-16 text-center">รูป</th>
                                 <th class="p-3">ชื่อสินค้า</th>
+                                <th class="p-3">หมวดหมู่</th>
                                 <th class="p-3">ราคาขาย</th>
+                                <th class="p-3">คงเหลือ</th>
                                 <th class="p-3 text-center">จัดการ</th>
                             </tr>
                         </thead>
@@ -218,11 +231,17 @@
 
         <div id="view-receipts" class="view-section p-2 md:p-4 overflow-y-auto">
             <div class="bg-white rounded-xl border shadow-sm h-full flex flex-col relative overflow-hidden">
-                <div class="p-4 border-b flex justify-between items-center bg-gray-50 gap-2">
+                <div class="p-4 border-b flex flex-wrap justify-between items-center bg-gray-50 gap-2">
                     <h2 class="font-bold text-lg text-gray-800"><i class="fa-solid fa-file-invoice mr-2 text-emerald-500"></i> ประวัติใบเสร็จรับเงิน</h2>
+                    <div class="flex flex-wrap gap-2 items-center text-sm font-normal">
+                        <input type="date" id="receipt-start-date" class="p-1.5 border rounded outline-none text-gray-600">
+                        <span>ถึง</span>
+                        <input type="date" id="receipt-end-date" class="p-1.5 border rounded outline-none text-gray-600">
+                        <button onclick="renderReceipts()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1.5 rounded transition">ค้นหา</button>
+                    </div>
                 </div>
                 <div class="overflow-x-auto flex-1 p-4">
-                    <table class="w-full text-left text-sm border rounded-lg overflow-hidden min-w-[700px]">
+                    <table class="w-full text-left text-sm border rounded-lg overflow-hidden min-w-[800px]">
                         <thead class="bg-gray-100 text-gray-700 border-b">
                             <tr>
                                 <th class="p-3">วันที่ / เวลา</th>
@@ -250,7 +269,6 @@
 
         <div id="view-settings" class="view-section p-2 md:p-4 overflow-y-auto">
             <div class="max-w-4xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- ตั้งค่าร้านค้า และ โลโก้ -->
                 <div class="bg-white rounded-xl border shadow-sm h-fit">
                     <div class="p-4 border-b bg-gray-50 font-bold text-gray-800"><i class="fa-solid fa-shop mr-2 text-cyan-600"></i> ตั้งค่าร้านค้า</div>
                     <form id="settings-form" class="p-4 space-y-5">
@@ -260,11 +278,11 @@
                         </div>
                         <div class="bg-gray-50 p-4 rounded-xl border border-dashed border-gray-300">
                             <label class="block text-sm font-medium text-gray-700 mb-2">โลโก้ร้าน (อัปโหลด หรือ ถ่ายรูป)</label>
-                            <input type="file" accept="image/*" capture="environment" onchange="handleLogoUpload(event)" class="w-full p-2 border rounded-lg outline-none text-sm bg-white cursor-pointer hover:border-cyan-300 transition">
+                            <input type="file" accept="image/*" capture="environment" onchange="handleLogoUpload(event, 'set-shop-logo', 'logo_preview', 'logo_preview_container')" class="w-full p-2 border rounded-lg outline-none text-sm bg-white cursor-pointer hover:border-cyan-300 transition">
                             <input type="hidden" id="set-shop-logo">
                             <div id="logo_preview_container" class="hidden mt-3 relative inline-block">
                                 <img id="logo_preview" src="" class="h-24 object-contain border border-gray-200 p-2 rounded-xl bg-white shadow-sm">
-                                <button type="button" onclick="clearLogo()" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center shadow hover:bg-red-600 transition"><i class="fa-solid fa-xmark text-xs"></i></button>
+                                <button type="button" onclick="clearLogo('set-shop-logo', 'logo_preview', 'logo_preview_container')" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center shadow hover:bg-red-600 transition"><i class="fa-solid fa-xmark text-xs"></i></button>
                             </div>
                         </div>
                         <div>
@@ -279,26 +297,23 @@
                     </form>
                 </div>
                 
-                <!-- จัดการพนักงาน Staff -->
                 <div class="bg-white rounded-xl border shadow-sm h-fit">
-                    <div class="p-4 border-b bg-gray-50 font-bold text-gray-800"><i class="fa-solid fa-users mr-2 text-cyan-600"></i> จัดการพนักงาน (Staff / Members)</div>
+                    <div class="p-4 border-b bg-gray-50 font-bold text-gray-800"><i class="fa-solid fa-users mr-2 text-cyan-600"></i> จัดการพนักงาน (Staff)</div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm border-b min-w-[350px]">
                             <thead class="bg-gray-100 text-gray-600">
                                 <tr><th class="p-3 pl-4">ชื่อ (แสดงในบิล)</th><th class="p-3">Username</th><th class="p-3 text-center">จัดการ</th></tr>
                             </thead>
-                            <tbody id="admin-members-table">
-                                <!-- JS Injected -->
-                            </tbody>
+                            <tbody id="admin-members-table"></tbody>
                         </table>
                     </div>
                     <form id="member-form" onsubmit="saveMemberData(event)" class="p-4 bg-gray-50 flex flex-col gap-3">
                         <h4 class="text-sm font-bold text-gray-700 mb-1 border-b pb-2">เพิ่มพนักงานใหม่</h4>
                         <div class="grid grid-cols-2 gap-3">
                             <div><label class="block text-xs text-gray-500 mb-1">ชื่อ-นามสกุล (แสดงในบิล)</label><input type="text" id="mem_name" required class="w-full p-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-cyan-300"></div>
-                            <div><label class="block text-xs text-gray-500 mb-1">สิทธิ์การใช้งาน</label><select id="mem_role" class="w-full p-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-cyan-300"><option value="Staff">พนักงานทั่วไป (Staff)</option><option value="Manager">ผู้จัดการ (Manager)</option></select></div>
+                            <div><label class="block text-xs text-gray-500 mb-1">สิทธิ์การใช้งาน</label><select id="mem_role" class="w-full p-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-cyan-300"><option value="Staff">พนักงานทั่วไป</option><option value="Manager">ผู้จัดการ</option></select></div>
                             <div><label class="block text-xs text-gray-500 mb-1">Username (ใช้ล็อกอิน)</label><input type="text" id="mem_username" required class="w-full p-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-cyan-300"></div>
-                            <div><label class="block text-xs text-gray-500 mb-1">รหัสผ่าน (Password)</label><input type="text" id="mem_password" required class="w-full p-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-cyan-300"></div>
+                            <div><label class="block text-xs text-gray-500 mb-1">รหัสผ่าน</label><input type="text" id="mem_password" required class="w-full p-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-cyan-300"></div>
                         </div>
                         <button type="submit" class="w-full bg-cyan-600 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-md hover:bg-cyan-700 transition mt-2"><i class="fa-solid fa-user-plus mr-1"></i> เพิ่มพนักงาน</button>
                     </form>
@@ -328,56 +343,109 @@
         </div>
     </div>
 
-    <!-- View: Customer Display -->
-    <div id="view-customer_display" class="view-section h-screen w-screen bg-gray-100 hidden relative overflow-hidden flex-col z-[100] fixed inset-0">
-        <div class="flex flex-col h-full bg-white shadow-xl overflow-hidden border">
-            <div class="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white p-6 text-center shadow-sm z-10 shrink-0">
-                <h1 class="text-3xl md:text-4xl font-bold tracking-wide drop-shadow-md">รายการอาหาร (Your Order)</h1>
+    <!-- Modals -->
+    <!-- Variant Selection Modal -->
+    <div id="variant-selection-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[110] backdrop-blur-sm p-4">
+        <div class="bg-white rounded-xl w-full max-w-sm shadow-2xl relative overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="bg-cyan-500 text-white p-4 flex justify-between items-center shrink-0">
+                <h3 class="text-xl font-bold" id="vs-modal-title">ชื่อเมนู</h3>
+                <button type="button" onclick="closeModal('variant-selection-modal')" class="text-white hover:text-red-200 transition"><i class="fa-solid fa-xmark fa-lg"></i></button>
             </div>
-            
-            <div class="flex flex-1 bg-gray-100 overflow-hidden relative">
-                <div class="w-1/2 flex flex-col items-center justify-center p-6 relative z-10 shadow-[5px_0_20px_rgba(0,0,0,0.08)] bg-cover bg-center border-r border-gray-200">
-                    <div id="cd-logo-state" class="flex flex-col items-center justify-center text-gray-800 text-center w-full h-full my-auto">
-                        <img id="cd-logo-img" src="" class="hidden max-w-[200px] max-h-[200px] object-contain animate-zoom drop-shadow-2xl mb-6 p-4 rounded-3xl" alt="Shop Logo">
-                        <i id="cd-logo-icon" class="fa-solid fa-store text-6xl text-emerald-500 animate-zoom mb-6"></i>
-                        <h2 id="cd-shop-name-display" class="text-3xl md:text-4xl font-bold tracking-wider drop-shadow-md text-emerald-600">CDZ POS</h2>
-                        <p class="text-lg text-gray-500 mt-3 font-medium">กำลังรอรับออเดอร์...</p>
-                    </div>
-                    
-                    <div id="cd-qr-state" class="hidden flex-col items-center justify-center text-gray-800 w-full h-full">
-                        <div class="flex flex-col items-center my-auto">
-                            <h2 class="text-3xl md:text-4xl font-bold mb-2 drop-shadow-md text-center text-cyan-600">สแกนเพื่อชำระเงิน</h2>
-                            <p class="text-lg md:text-xl text-gray-500 mb-6 font-medium tracking-wide">PromptPay / Mobile Banking</p>
-                            
-                            <div class="bg-white p-5 rounded-3xl shadow-2xl mb-6 transform hover:scale-105 transition duration-300 border-2 border-dashed border-cyan-300">
-                                <img id="cd-qr-image" src="" class="w-52 h-52 md:w-64 md:h-64 object-contain mx-auto mix-blend-multiply" alt="QR Code">
-                            </div>
-                            
-                            <p class="text-4xl md:text-5xl font-extrabold text-emerald-600 drop-shadow-md bg-emerald-50 px-6 py-2 rounded-full border border-emerald-100">฿<span id="cd-qr-total">0.00</span></p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="w-1/2 flex flex-col h-full bg-white z-20 relative">
-                    <div class="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50/50" id="cd-main-area">
-                        <div id="cd-cart-items-container" class="space-y-2"></div>
-                    </div>
-                    
-                    <div class="bg-white border-t border-gray-100 p-4 md:p-6 shadow-[0_-10px_20px_rgba(0,0,0,0.02)] shrink-0">
-                        <div class="flex justify-between items-center bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                            <div>
-                                <span class="block text-xl font-bold text-gray-600">ยอดรวม</span>
-                                <span class="block text-xs font-medium text-gray-400">Total Amount</span>
-                            </div>
-                            <span class="text-4xl md:text-5xl font-extrabold text-emerald-600 drop-shadow-sm">฿<span id="cd-total">0.00</span></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="p-4 overflow-y-auto flex-1 bg-white" id="vs-options"></div>
         </div>
     </div>
 
-    <!-- Modals -->
+    <!-- Product Form Modal -->
+    <div id="modal-product-form" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[110] backdrop-blur-sm p-4">
+        <form id="product-form" onsubmit="saveProductData(event)" class="bg-white rounded-2xl w-full max-w-3xl shadow-2xl relative flex flex-col max-h-[95vh] overflow-hidden">
+            <div class="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white p-4 flex justify-between items-center shrink-0">
+                <h3 class="text-lg font-bold" id="product-form-title">เพิ่มสินค้าใหม่</h3>
+                <button type="button" onclick="closeModal('modal-product-form')" class="text-white hover:text-red-200 transition"><i class="fa-solid fa-xmark fa-lg"></i></button>
+            </div>
+            
+            <div class="p-6 bg-gray-50 flex-1 overflow-y-auto">
+                <input type="hidden" id="form-product-id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <!-- ข้อมูลหลัก -->
+                    <div class="bg-white p-4 rounded-xl border shadow-sm space-y-3">
+                        <div class="flex items-start gap-4">
+                            <div class="w-20 shrink-0 flex flex-col items-center">
+                                <div class="w-20 h-20 bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl overflow-hidden relative group hover:border-cyan-400 transition cursor-pointer mb-2" onclick="document.getElementById('prod_image_input').click()">
+                                    <img id="form-product-preview" src="" class="w-full h-full object-cover hidden">
+                                    <div id="form-product-placeholder" class="w-full h-full flex flex-col items-center justify-center text-gray-400 group-hover:text-cyan-500">
+                                        <i class="fa-solid fa-camera text-xl mb-1"></i><span class="text-[9px] font-bold">ใส่รูป</span>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="clearProductImage()" class="text-[10px] text-red-500 hover:bg-red-50 px-2 py-1 rounded font-bold transition w-full border border-red-100 hidden" id="prod_img_clear_btn">ลบรูป</button>
+                                <input type="file" id="prod_image_input" accept="image/*" onchange="handleProductImageUpload(event)" class="hidden">
+                                <input type="hidden" id="form-product-image">
+                            </div>
+                            <div class="flex-1 space-y-2 w-full">
+                                <div><label class="block text-xs font-bold text-gray-500 mb-1">ชื่อสินค้า</label><input type="text" id="form-product-name" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-cyan-300 outline-none text-sm"></div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 mb-1">หมวดหมู่</label>
+                                    <select id="form-product-cat" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-cyan-300 outline-none text-sm"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 pt-2 border-t">
+                            <div><label class="block text-xs font-bold text-gray-500 mb-1">ราคาขาย</label><input type="number" id="form-product-price" step="0.01" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-cyan-300 outline-none text-emerald-600 font-bold text-sm"></div>
+                            <div><label class="block text-xs font-bold text-gray-500 mb-1">ต้นทุน</label><input type="number" id="form-product-cost" step="0.01" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-cyan-300 outline-none text-sm"></div>
+                            <div class="col-span-2">
+                                <label class="block text-xs font-bold text-gray-500 mb-1">สต๊อก</label><input type="number" id="form-product-stock" value="100" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-cyan-300 outline-none text-sm bg-blue-50">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ตัวเลือกเสริม -->
+                    <div class="space-y-4">
+                        <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex flex-col shadow-sm">
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="block text-sm font-bold text-blue-800"><i class="fa-solid fa-circle-dot mr-1"></i> เลือก 1 อย่าง (วงกลม)</label>
+                                <button type="button" onclick="addVariantRow('single')" class="text-[10px] bg-blue-500 text-white px-3 py-1.5 rounded border border-blue-600 hover:bg-blue-600 font-bold transition">เพิ่ม</button>
+                            </div>
+                            <p class="text-[10px] text-gray-500 mb-2 leading-tight">บังคับเลือกแค่อย่างเดียว เช่น ขนาด (เล็ก, ใหญ่)</p>
+                            <div class="text-[9px] font-bold text-gray-400 flex px-1 mb-1"><div class="w-6 text-center">ใช้</div><div class="flex-1 px-1">ชื่อ</div><div class="w-16 px-1 text-right">+ราคา</div><div class="w-16 px-1 text-right">+ทุน</div><div class="w-6"></div></div>
+                            <div id="variant-single-container" class="space-y-1.5 overflow-y-auto max-h-40 bg-white p-2 rounded-lg border border-blue-100"></div>
+                        </div>
+
+                        <div class="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 shadow-sm">
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="block text-sm font-bold text-emerald-800"><i class="fa-solid fa-square-check mr-1"></i> เลือกเพิ่มเติมกี่อย่างก็ได้ (สวิตช์)</label>
+                                <button type="button" onclick="addVariantRow('multiple')" class="text-[10px] bg-emerald-500 text-white px-3 py-1.5 rounded border border-emerald-600 hover:bg-emerald-600 font-bold transition">เพิ่ม</button>
+                            </div>
+                            <p class="text-[10px] text-gray-500 mb-2 leading-tight">เลือกเปิดปิดได้ตามใจชอบ เช่น ท็อปปิ้ง</p>
+                            <div class="text-[9px] font-bold text-gray-400 flex px-1 mb-1"><div class="w-6 text-center">ใช้</div><div class="flex-1 px-1">ชื่อ</div><div class="w-16 px-1 text-right">+ราคา</div><div class="w-16 px-1 text-right">+ทุน</div><div class="w-6"></div></div>
+                            <div id="variant-multiple-container" class="space-y-1.5 overflow-y-auto max-h-40 bg-white p-2 rounded-lg border border-emerald-100"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="p-4 border-t bg-white flex justify-end gap-2 shrink-0">
+                <button type="button" onclick="closeModal('modal-product-form')" class="px-5 py-2 rounded-xl text-gray-600 hover:bg-gray-100 font-medium transition">ยกเลิก</button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-bold shadow-md transition">บันทึกข้อมูล</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Category Form Modal -->
+    <div id="modal-category-form" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[110] backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl relative overflow-hidden flex flex-col">
+            <div class="bg-cyan-500 text-white p-4 flex justify-between items-center">
+                <h3 class="text-lg font-bold">จัดการหมวดหมู่</h3>
+                <button onclick="closeModal('modal-category-form')" class="text-white hover:text-red-200"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="category-form" class="p-6 space-y-4 bg-gray-50">
+                <input type="hidden" id="form-category-id">
+                <div><label class="block text-sm font-bold text-gray-600 mb-1">ชื่อหมวดหมู่</label><input type="text" id="form-category-name" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-cyan-400 outline-none"></div>
+                <button type="button" onclick="saveCategoryData()" class="w-full bg-cyan-500 text-white font-bold py-3 rounded-xl mt-4">บันทึกหมวดหมู่</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
     <div id="modal-checkout" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[110] backdrop-blur-sm p-4">
         <div class="bg-white rounded-2xl w-full max-w-[400px] p-0 shadow-2xl relative overflow-hidden flex flex-col">
             <div class="bg-gradient text-white p-4 flex justify-between items-center shrink-0">
@@ -388,7 +456,6 @@
                 <p class="text-gray-500 mb-1">ยอดที่ต้องชำระสุทธิ</p>
                 <p class="text-5xl font-extrabold text-emerald-600 mb-6 drop-shadow-sm">฿<span id="modal-checkout-total">0.00</span></p>
 
-                <!-- Checkbox พิมพ์ใบเสร็จ -->
                 <label class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-xl mb-6 cursor-pointer hover:border-cyan-400 transition shadow-sm">
                     <span class="font-bold text-gray-700"><i class="fa-solid fa-print mr-2 text-gray-400"></i>พิมพ์ใบเสร็จ</span>
                     <div class="flex items-center">
@@ -448,61 +515,6 @@
         </div>
     </div>
 
-    <div id="modal-product-form" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[110] backdrop-blur-sm p-4">
-        <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl relative overflow-hidden flex flex-col">
-            <div class="bg-emerald-500 text-white p-4 flex justify-between items-center">
-                <h3 class="text-lg font-bold" id="product-form-title">เพิ่ม/แก้ไขสินค้า</h3>
-                <button onclick="closeModal('modal-product-form')" class="text-white hover:text-red-200"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form id="product-form" class="p-6 space-y-4 bg-gray-50">
-                <input type="hidden" id="form-product-id">
-                <div><label class="block text-sm font-bold text-gray-600 mb-1">ชื่อสินค้า</label><input type="text" id="form-product-name" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none"></div>
-                <div><label class="block text-sm font-bold text-gray-600 mb-1">หมวดหมู่</label><select id="form-product-cat" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none"></select></div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-sm font-bold text-gray-600 mb-1">ราคาขาย</label><input type="number" id="form-product-price" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none text-emerald-600 font-bold"></div>
-                    <div><label class="block text-sm font-bold text-gray-600 mb-1">ต้นทุน</label><input type="number" id="form-product-cost" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none text-red-500"></div>
-                </div>
-                <button type="button" onclick="saveProductData()" class="w-full bg-emerald-500 text-white font-bold py-3 rounded-xl mt-4">บันทึกสินค้า</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="modal-category-form" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[110] backdrop-blur-sm p-4">
-        <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl relative overflow-hidden flex flex-col">
-            <div class="bg-cyan-500 text-white p-4 flex justify-between items-center">
-                <h3 class="text-lg font-bold">จัดการหมวดหมู่</h3>
-                <button onclick="closeModal('modal-category-form')" class="text-white hover:text-red-200"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form id="category-form" class="p-6 space-y-4 bg-gray-50">
-                <input type="hidden" id="form-category-id">
-                <div><label class="block text-sm font-bold text-gray-600 mb-1">ชื่อหมวดหมู่</label><input type="text" id="form-category-name" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-cyan-400 outline-none"></div>
-                <button type="button" onclick="saveCategoryData()" class="w-full bg-cyan-500 text-white font-bold py-3 rounded-xl mt-4">บันทึกหมวดหมู่</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal รายละเอียดใบเสร็จ -->
-    <div id="modal-receipt-details" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[110] backdrop-blur-sm p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl relative flex flex-col max-h-[85vh] overflow-hidden">
-            <div class="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white p-4 flex justify-between items-center shrink-0">
-                <h3 class="text-lg font-bold"><i class="fa-solid fa-file-lines mr-2"></i> รายละเอียดใบเสร็จ <span id="rd-id"></span></h3>
-                <button type="button" onclick="closeModal('modal-receipt-details')" class="text-white hover:text-red-200 transition"><i class="fa-solid fa-xmark fa-lg"></i></button>
-            </div>
-            <div class="p-6 overflow-y-auto flex-1 bg-gray-50 text-sm">
-                <div class="flex justify-between border-b pb-2 mb-2 text-gray-500">
-                    <span>วันที่: <span id="rd-date" class="font-medium text-gray-800"></span></span>
-                    <span>โต๊ะ: <span id="rd-table" class="font-medium text-gray-800"></span></span>
-                </div>
-                <div id="rd-items" class="space-y-2 mb-4 mt-2"></div>
-                <div class="border-t border-dashed border-gray-300 pt-3 flex justify-between items-center text-lg mt-4">
-                    <span class="font-bold text-gray-700">ยอดรวมทั้งหมด:</span>
-                    <span id="rd-total" class="font-extrabold text-emerald-600">฿0.00</span>
-                </div>
-                <div class="text-right mt-2 text-xs text-gray-400">ชำระผ่าน: <span id="rd-method" class="font-bold text-gray-500"></span></div>
-            </div>
-        </div>
-    </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -519,7 +531,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'cdz-pos-app';
+        const appId = 'cdz-pos-app';
         
         const publicPath = (colName) => collection(db, 'artifacts', appId, 'public', 'data', colName);
         
@@ -528,21 +540,19 @@
             cart: [], currentTableId: "0", currentView: 'pos'
         };
 
+        // ตั้งค่าตัวกรองวันที่เริ่มต้นให้อยู่ในเดือนปัจจุบัน
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+        
+        let filterStartDate = firstDay;
+        let filterEndDate = lastDay;
+
         let unsubscribeListeners = [];
         const initAuth = async () => {
             try { 
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    try {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } catch (tokenErr) {
-                        console.warn("พบปัญหา Custom Token ไม่ตรงกัน (มีการใช้ Firebase Config ภายนอก) ระบบจะสลับไปใช้ Anonymous Auth แทน");
-                        await signInAnonymously(auth);
-                    }
-                } else {
-                    await signInAnonymously(auth); 
-                }
-            } 
-            catch (err) { console.error("Auth error", err); }
+                await signInAnonymously(auth); 
+            } catch (err) { console.error("Auth error", err); }
         };
 
         onAuthStateChanged(auth, (user) => {
@@ -551,11 +561,17 @@
 
         function syncCartToLocal() {
             localStorage.setItem('pos_current_cart', JSON.stringify(window.posState.cart));
-            if(window.posState.currentView === 'customer_display') window.updateCustomerDisplay();
         }
 
         window.onload = () => {
             initAuth();
+            
+            // Set Default Dates to inputs
+            if(document.getElementById('admin-start-date')) document.getElementById('admin-start-date').value = filterStartDate;
+            if(document.getElementById('admin-end-date')) document.getElementById('admin-end-date').value = filterEndDate;
+            if(document.getElementById('receipt-start-date')) document.getElementById('receipt-start-date').value = filterStartDate;
+            if(document.getElementById('receipt-end-date')) document.getElementById('receipt-end-date').value = filterEndDate;
+
             const urlParams = new URLSearchParams(window.location.search);
             const viewParam = urlParams.get('view') || 'pos';
             
@@ -608,32 +624,16 @@
                     document.getElementById('set-receipt-footer').value = window.posState.settings.receipt_footer || '';
                     
                     document.getElementById('set-shop-logo').value = window.posState.settings.shop_logo || '';
-                    
                     const logoPreview = document.getElementById('logo_preview');
                     const logoCont = document.getElementById('logo_preview_container');
-                    if(window.posState.settings.shop_logo) {
+                    if(window.posState.settings.shop_logo && logoPreview) {
                         logoPreview.src = window.posState.settings.shop_logo;
                         logoCont.classList.remove('hidden');
-                    } else {
+                    } else if(logoPreview) {
                         logoPreview.src = '';
                         logoCont.classList.add('hidden');
                     }
-                    
-                    const cdLogo = document.getElementById('cd-logo-img');
-                    const cdIcon = document.getElementById('cd-logo-icon');
-                    if(cdLogo && cdIcon) {
-                        if(window.posState.settings.shop_logo) {
-                            cdLogo.src = window.posState.settings.shop_logo;
-                            cdLogo.classList.remove('hidden');
-                            cdIcon.classList.add('hidden');
-                        } else {
-                            cdLogo.classList.add('hidden');
-                            cdIcon.classList.remove('hidden');
-                        }
-                    }
-
                     if(document.getElementById('customer-shop-name')) document.getElementById('customer-shop-name').innerText = window.posState.settings.shop_name || 'CDZ POS';
-                    if(document.getElementById('cd-shop-name-display')) document.getElementById('cd-shop-name-display').innerText = window.posState.settings.shop_name || 'CDZ POS';
                 }
             }, e => console.error("Firebase error:", e)));
         }
@@ -648,15 +648,13 @@
             const targetView = document.getElementById(`view-${viewId}`);
             if(targetView) { 
                 targetView.classList.add('active'); 
-                if(viewId !== 'customer' && viewId !== 'customer_display') {
-                    targetView.classList.add('flex'); 
-                }
+                if(viewId !== 'customer') targetView.classList.add('flex'); 
             }
             
             const navBtn = document.getElementById(`nav-${viewId}`);
             if(navBtn) navBtn.classList.add('sidebar-active');
             
-            if (viewId === 'customer' || viewId === 'customer_display') {
+            if (viewId === 'customer') {
                 document.getElementById('main-sidebar').classList.add('hidden');
                 document.getElementById('main-header').classList.add('hidden');
                 document.getElementById('main-content').classList.add('hidden');
@@ -675,13 +673,32 @@
             if(viewId === 'tables') renderTablesAdmin();
             if(viewId === 'settings') renderMembersAdmin();
             if(viewId === 'customer') { renderCustomerView(); renderCustomerCart(); }
-            if(viewId === 'customer_display') window.updateCustomerDisplay();
         }
 
         window.toggleSidebar = () => { document.getElementById('main-sidebar').classList.toggle('sidebar-collapsed'); };
         window.toggleMobileMenu = (forceClose = false) => { 
             const sb = document.getElementById('main-sidebar');
             if(forceClose) sb.classList.add('hidden'); else sb.classList.toggle('hidden');
+        };
+
+        // --- ฟังก์ชันช่วยเหลือสำหรับ CSV Export ---
+        window.exportCSV = (filename, headers, rows) => {
+            let csvContent = "\uFEFF" + headers.join(",") + "\n";
+            rows.forEach(row => {
+                csvContent += row.map(cell => {
+                    let cellStr = String(cell ?? '').replace(/"/g, '""');
+                    return `"${cellStr}"`;
+                }).join(",") + "\n";
+            });
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         };
 
         let currentFilter = 'all';
@@ -704,18 +721,134 @@
             let html = '';
             window.posState.products.forEach(p => {
                 if(currentFilter !== 'all' && p.category_id !== currentFilter) return;
-                html += `
-                <div onclick="addToCart('${p.id}', '${p.name}', ${p.price})" class="product-item border rounded-xl p-3 cursor-pointer hover:shadow-lg hover:border-cyan-300 transition bg-white flex flex-col items-center text-center group">
-                    <div class="w-14 h-14 rounded-full mb-3 flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition bg-emerald-400">
-                        <i class="fa-solid fa-utensils text-xl"></i>
-                    </div>
-                    <span class="text-sm font-medium leading-tight mb-1 text-gray-700">${p.name}</span>
-                    <span class="text-emerald-600 font-bold mt-auto">฿${parseFloat(p.price).toFixed(2)}</span>
-                </div>`;
+                
+                // รูปภาพ
+                let imgHtml = '';
+                if (p.image) {
+                    imgHtml = `<img src="${p.image}" class="w-16 h-16 rounded-xl object-cover shadow-sm mr-3 border border-gray-100 shrink-0">`;
+                } else {
+                    imgHtml = `<div class="w-16 h-16 rounded-xl flex items-center justify-center text-white shadow-sm mr-3 shrink-0 bg-emerald-400"><i class="fa-solid fa-utensils text-xl"></i></div>`;
+                }
+
+                if(window.posState.currentView === 'customer') {
+                    // แบบลิสต์ยาวในจอลูกค้า
+                    let safeVariants = p.variants ? String(p.variants).replace(/"/g, '&quot;') : '{}';
+                    html += `
+                    <div data-cat="${p.category_id}" class="product-item flex items-center justify-between border-b pb-4 pt-2 group">
+                        ${imgHtml}
+                        <div class="flex-1 pr-4">
+                            <h3 class="font-bold text-gray-800 text-lg leading-tight mb-1">${p.name}</h3>
+                            <p class="text-emerald-600 font-bold">฿${parseFloat(p.price).toFixed(2)}</p>
+                        </div>
+                        <button onclick="selectProductVariant('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${safeVariants}')" class="bg-cyan-50 text-cyan-600 border border-cyan-200 hover:bg-gradient-to-r hover:from-emerald-500 hover:to-cyan-500 hover:text-white w-12 h-12 rounded-full flex items-center justify-center transition shadow-sm font-bold text-xl shrink-0 group-hover:scale-105">+</button>
+                    </div>`;
+                } else {
+                    // แบบการ์ดใน POS
+                    let safeVariants = p.variants ? String(p.variants).replace(/"/g, '&quot;') : '{}';
+                    let imgHtmlGrid = p.image 
+                        ? `<img src="${p.image}" class="w-14 h-14 rounded-full mb-3 object-cover shadow-sm group-hover:scale-110 transition border border-gray-100">`
+                        : `<div class="w-14 h-14 rounded-full mb-3 flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition bg-emerald-400"><i class="fa-solid fa-utensils text-xl"></i></div>`;
+                    
+                    html += `
+                    <div onclick="selectProductVariant('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${safeVariants}')" class="product-item border rounded-xl p-3 cursor-pointer hover:shadow-lg hover:border-cyan-300 transition bg-white flex flex-col items-center text-center relative group">
+                        ${imgHtmlGrid}
+                        <span class="text-sm font-medium leading-tight mb-1 line-clamp-2 text-gray-700">${p.name}</span>
+                        <span class="text-emerald-600 font-bold mt-auto">฿${parseFloat(p.price).toFixed(2)}</span>
+                    </div>`;
+                }
             });
             const grid = window.posState.currentView === 'customer' ? document.getElementById('customer-products') : document.getElementById('pos-product-grid');
             if(grid) grid.innerHTML = html;
         }
+
+        // ระบบจัดการ Variants
+        window.selectProductVariant = (id, name, basePrice, variantsJsonStr) => {
+            try {
+                let variantsData = { single: [], multiple: [] };
+                if (variantsJsonStr && variantsJsonStr !== '{}') {
+                    let parsed = JSON.parse(variantsJsonStr);
+                    if (parsed.single) variantsData.single = parsed.single;
+                    if (parsed.multiple) variantsData.multiple = parsed.multiple;
+                }
+                
+                let activeSingle = variantsData.single.filter(v => v.active);
+                let activeMulti = variantsData.multiple.filter(v => v.active);
+                
+                if (activeSingle.length === 0 && activeMulti.length === 0) { 
+                    addToCart(id, name, basePrice); return; 
+                }
+                
+                const titleEl = document.getElementById('vs-modal-title');
+                const container = document.getElementById('vs-options');
+                if(!titleEl || !container) return; 
+                
+                titleEl.innerText = name;
+                let html = `<div class="mb-4 p-4 bg-emerald-50 rounded-xl flex justify-between items-center"><span class="text-sm font-bold text-gray-700">ราคารวม (Total)</span><span id="vs-current-price" class="text-3xl font-extrabold text-emerald-600">฿${parseFloat(basePrice).toFixed(2)}</span></div>`;
+                
+                if (activeSingle.length > 0) {
+                    html += `<p class="text-xs font-bold text-gray-500 mb-2 mt-4">เลือกได้ 1 อย่าง</p>
+                    <label class="flex items-center justify-between p-3.5 bg-white border border-cyan-300 rounded-2xl mb-2 cursor-pointer shadow-sm"><div class="flex items-center flex-1"><input type="radio" name="var_single" value="0" data-name="" data-price="0" class="w-6 h-6 accent-cyan-500 cursor-pointer" onchange="updateModalPrice()" checked><span class="ml-3 font-bold text-gray-700">แบบปกติ</span></div><span class="text-gray-400 font-bold">+฿0.00</span></label>`;
+                    activeSingle.forEach((v, idx) => {
+                        let vPrice = parseFloat(v.price) || 0;
+                        let safeName = String(v.name || '').replace(/"/g, '&quot;');
+                        html += `<label class="flex items-center justify-between p-3.5 bg-white border border-cyan-300 rounded-2xl mb-2 cursor-pointer shadow-sm"><div class="flex items-center flex-1"><input type="radio" name="var_single" value="${idx+1}" data-name="${safeName}" data-price="${vPrice}" onchange="updateModalPrice()" class="w-6 h-6 accent-cyan-500 cursor-pointer"><span class="ml-3 font-bold text-gray-700">${safeName}</span></div><span class="text-emerald-600 font-bold">+฿${vPrice.toFixed(2)}</span></label>`;
+                    });
+                }
+
+                if (activeMulti.length > 0) {
+                    html += `<p class="text-xs font-bold text-gray-500 mb-2 mt-4">เลือกเพิ่มเติมได้หลายรายการ</p>`;
+                    activeMulti.forEach((v, idx) => {
+                        let vPrice = parseFloat(v.price) || 0;
+                        let safeName = String(v.name || '').replace(/"/g, '&quot;');
+                        html += `<label class="flex items-center justify-between p-3.5 bg-white border border-cyan-300 rounded-2xl mb-2 cursor-pointer shadow-sm"><div class="flex items-center flex-1"><input type="checkbox" class="var-multi-check hidden" value="${idx}" data-name="${safeName}" data-price="${vPrice}" onchange="toggleVariantCheckbox(this)"><div class="w-12 h-7 bg-gray-300 rounded-full relative transition-colors duration-200 toggle-bg"><div class="w-5 h-5 bg-white rounded-full absolute top-[4px] left-[4px] transition-transform duration-200 toggle-dot shadow-md"></div></div><span class="ml-3 font-bold text-gray-700">${safeName}</span></div><span class="text-emerald-600 font-bold">+฿${vPrice.toFixed(2)}</span></label>`;
+                    });
+                }
+                
+                let safeBaseName = String(name || '').replace(/"/g, '&quot;');
+                html += `<input type="hidden" id="vs-base-id" value="${id}"><input type="hidden" id="vs-base-name" value="${safeBaseName}"><input type="hidden" id="vs-base-price" value="${basePrice}"><button type="button" onclick="confirmVariantSelection()" class="w-full mt-4 bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-4 rounded-xl shadow-lg transition text-lg flex justify-center items-center">ยืนยันการเลือก</button>`;
+                
+                container.innerHTML = html;
+                const modal = document.getElementById('variant-selection-modal');
+                if(modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+            } catch (error) { addToCart(id, name, basePrice); }
+        };
+
+        window.updateModalPrice = () => {
+            const basePrice = parseFloat(document.getElementById('vs-base-price').value || 0);
+            let finalPrice = basePrice;
+            const singleSelected = document.querySelector('input[name="var_single"]:checked');
+            if (singleSelected) finalPrice += parseFloat(singleSelected.dataset.price || 0);
+            const multiCheckboxes = document.querySelectorAll('.var-multi-check:checked');
+            multiCheckboxes.forEach(cb => { finalPrice += parseFloat(cb.dataset.price || 0); });
+            const priceDisplay = document.getElementById('vs-current-price');
+            if (priceDisplay) priceDisplay.innerText = '฿' + finalPrice.toFixed(2);
+        };
+
+        window.toggleVariantCheckbox = (checkbox) => {
+            const bg = checkbox.nextElementSibling;
+            const dot = bg.querySelector('.toggle-dot');
+            if(checkbox.checked) { bg.classList.remove('bg-gray-300'); bg.classList.add('bg-cyan-500'); dot.classList.add('translate-x-5'); } 
+            else { bg.classList.add('bg-gray-300'); bg.classList.remove('bg-cyan-500'); dot.classList.remove('translate-x-5'); }
+            window.updateModalPrice();
+        };
+
+        window.confirmVariantSelection = () => {
+            const id = document.getElementById('vs-base-id').value;
+            const baseName = document.getElementById('vs-base-name').value;
+            const basePrice = parseFloat(document.getElementById('vs-base-price').value);
+            let finalPrice = basePrice;
+            let variantNames = [];
+            
+            const singleSelected = document.querySelector('input[name="var_single"]:checked');
+            if (singleSelected && singleSelected.dataset.name) { variantNames.push(singleSelected.dataset.name); finalPrice += parseFloat(singleSelected.dataset.price || 0); }
+            
+            const multiCheckboxes = document.querySelectorAll('.var-multi-check:checked');
+            multiCheckboxes.forEach(cb => { variantNames.push(cb.dataset.name); finalPrice += parseFloat(cb.dataset.price || 0); });
+            
+            let finalName = variantNames.length > 0 ? `${baseName} (${variantNames.join(', ')})` : baseName;
+            addToCart(id, finalName, finalPrice);
+            closeModal('variant-selection-modal');
+        };
 
         function renderTables() {
             const select = document.getElementById('pos-table');
@@ -756,9 +889,8 @@
         window.clearCart = () => { 
             window.posState.cart = []; 
             renderCart(); 
-            renderCustomerCart(); 
+            if(window.posState.currentView === 'customer') renderCustomerCart(); 
             syncCartToLocal();
-            localStorage.removeItem('pos_show_qr');
         };
 
         function renderCart() {
@@ -809,7 +941,6 @@
         };
 
         window.closeModal = (id) => { 
-            if(id === 'modal-checkout') localStorage.removeItem('pos_show_qr');
             document.getElementById(id).classList.add('hidden'); 
             document.getElementById(id).classList.remove('flex'); 
         };
@@ -857,35 +988,26 @@
             document.getElementById('checkout-buttons').classList.add('hidden');
             const ppSec = document.getElementById('pp-section');
             ppSec.classList.remove('hidden'); ppSec.classList.add('flex');
-            
-            localStorage.setItem('pos_show_qr', JSON.stringify({ url: qrUrl, total: total.toFixed(2) }));
-            if(window.posState.currentView === 'customer_display') window.updateCustomerDisplay();
         };
         
         window.hidePPSection = () => {
             document.getElementById('pp-section').classList.add('hidden'); document.getElementById('pp-section').classList.remove('flex');
             document.getElementById('checkout-buttons').classList.remove('hidden');
-            localStorage.removeItem('pos_show_qr');
-            if(window.posState.currentView === 'customer_display') window.updateCustomerDisplay();
         };
 
         window.processCheckout = async (method) => {
             const tableId = String(window.posState.currentTableId);
             let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
             
-            let received = total;
-            let change = 0;
+            let received = total; let change = 0;
             if (method === 'cash') {
                 received = parseFloat(document.getElementById('cash-received').value) || total;
                 change = received - total;
             }
 
             const newOrder = {
-                table_id: tableId,
-                total: total,
-                status: method === 'pending' ? 'pending' : 'paid',
-                payment_method: method,
-                created_at: new Date().toISOString(),
+                table_id: tableId, total: total, status: method === 'pending' ? 'pending' : 'paid',
+                payment_method: method, created_at: new Date().toISOString(),
                 items: window.posState.cart.map(i => ({...i, status: 'pending'}))
             };
 
@@ -927,15 +1049,9 @@
                     window.posState.currentTableId = "0";
                 };
 
-                if (isPrintChecked && method !== 'pending') {
-                    window.printReceipt(finalOrderId, printItems, total, method, received, change, finishCheckout);
-                } else {
-                    finishCheckout();
-                }
-            } catch (e) {
-                console.error(e);
-                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้: ' + e.message, 'error');
-            }
+                if (isPrintChecked && method !== 'pending') window.printReceipt(finalOrderId, printItems, total, method, received, change, finishCheckout);
+                else finishCheckout();
+            } catch (e) { Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้: ' + e.message, 'error'); }
         };
 
         window.printReceipt = (orderId, items, total, method, received, change, callback) => {
@@ -952,9 +1068,7 @@
             
             let html = `<div style="text-align: center; margin-bottom: 10px; padding-top: 10px;">${logoHtml}<h2 style="margin:0; font-size: 18px; font-weight: bold;">${shopName}</h2><p style="margin:0; font-size: 12px; color: #555;">ใบเสร็จรับเงิน / Receipt</p><p style="margin:0; font-size: 12px; border-bottom: 1px dashed #ccc; padding-bottom: 5px;">วันที่: ${date}</p></div><div style="font-size: 13px; margin-bottom: 5px; font-weight: bold;">บิล #: ${String(orderId).substring(0, 6)}</div><div style="font-size: 13px; margin-bottom: 5px;">พนักงาน: ${staffName}</div><table style="width: 100%; font-size: 13px; border-collapse: collapse; margin-bottom: 10px;"><tbody>`;
             
-            items.forEach(item => { 
-                html += `<tr><td style="padding: 3px 0;">${item.name} <br><small style="color: #666;">x${item.qty}</small></td><td style="text-align: right; vertical-align: bottom; padding: 3px 0; font-weight: bold;">${(item.price * item.qty).toFixed(2)}</td></tr>`; 
-            });
+            items.forEach(item => { html += `<tr><td style="padding: 3px 0;">${item.name} <br><small style="color: #666;">x${item.qty}</small></td><td style="text-align: right; vertical-align: bottom; padding: 3px 0; font-weight: bold;">${(item.price * item.qty).toFixed(2)}</td></tr>`; });
             
             html += `</tbody></table><div style="border-top: 1px dashed #ccc; padding-top: 5px; margin-bottom: 10px;"><div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px;"><span>ยอดรวมสุทธิ</span><span>฿${total.toFixed(2)}</span></div>`;
             html += `<div style="display: flex; justify-content: space-between; font-size: 12px; color: #555; margin-top: 5px;"><span>ชำระโดย:</span><span>${payMethodText}</span></div>`;
@@ -996,10 +1110,8 @@
                     }
                 });
             });
-            
             if(html === '') html = '<div class="col-span-full text-center text-gray-400 py-20 text-lg"><i class="fa-solid fa-check-circle mb-2 text-5xl block opacity-20"></i>เคลียร์ทุกออเดอร์แล้ว เยี่ยมมาก!</div>';
             grid.innerHTML = html;
-
             const badge = document.getElementById('nav-kitchen-badge');
             if(badge) { badge.innerText = pendingItemsCount; badge.classList.toggle('hidden', pendingItemsCount === 0); }
         }
@@ -1011,9 +1123,37 @@
             await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', String(orderId)), { items: newItems });
         };
 
-        function renderAdminDashboard() {
+        window.exportSales = () => {
+            const startDate = document.getElementById('admin-start-date').value;
+            const endDate = document.getElementById('admin-end-date').value;
+            
+            const filteredOrders = window.posState.orders.filter(o => {
+                const od = o.created_at.substring(0, 10);
+                return od >= startDate && od <= endDate && (o.status === 'paid' || o.status === 'cancelled');
+            });
+
+            const headers = ['วันที่/เวลา', 'โต๊ะ', 'ยอดรวม', 'ช่องทางชำระ', 'สถานะ'];
+            const rows = filteredOrders.map(o => {
+                const tableName = o.table_id === "0" ? "กลับบ้าน" : (window.posState.tables.find(t=>String(t.id) === String(o.table_id))?.name || o.table_id);
+                const d = new Date(o.created_at).toLocaleString('th-TH');
+                const status = o.status === 'paid' ? 'สำเร็จ' : 'ยกเลิก';
+                return [d, tableName, o.total, o.payment_method, status];
+            });
+            window.exportCSV(`sales_export_${new Date().getTime()}.csv`, headers, rows);
+        };
+
+        window.renderAdminDashboard = () => {
+            const startDate = document.getElementById('admin-start-date').value || filterStartDate;
+            const endDate = document.getElementById('admin-end-date').value || filterEndDate;
+            filterStartDate = startDate; filterEndDate = endDate;
+
             let rev = 0, ordCount = 0, ref = 0;
-            window.posState.orders.forEach(o => {
+            const filteredOrders = window.posState.orders.filter(o => {
+                const od = o.created_at.substring(0, 10);
+                return od >= startDate && od <= endDate;
+            });
+
+            filteredOrders.forEach(o => {
                 if(o.status === 'paid') { rev += parseFloat(o.total); ordCount++; } 
                 else if(o.status === 'cancelled') { ref += parseFloat(o.total); }
             });
@@ -1026,7 +1166,7 @@
             }
 
             let html = '';
-            [...window.posState.orders].sort((a,b)=> new Date(b.created_at) - new Date(a.created_at)).forEach(o => {
+            [...filteredOrders].sort((a,b)=> new Date(b.created_at) - new Date(a.created_at)).forEach(o => {
                 const tableName = o.table_id === "0" ? "กลับบ้าน" : (window.posState.tables.find(t=>String(t.id) === String(o.table_id))?.name || o.table_id);
                 const d = new Date(o.created_at).toLocaleString('th-TH');
                 let statusBadge = o.status === 'paid' ? '<span class="text-emerald-500 font-bold">สำเร็จ</span>' : (o.status === 'pending' ? '<span class="text-orange-500 font-bold">ค้างชำระ</span>' : '<span class="text-red-500 font-bold">ยกเลิก</span>');
@@ -1034,26 +1174,49 @@
             });
             const tb = document.getElementById('dash-orders-table');
             if(tb) tb.innerHTML = html || '<tr><td colspan="5" class="text-center py-4">ไม่มีข้อมูล</td></tr>';
-        }
+        };
 
-        function renderReceipts() {
+        window.renderReceipts = () => {
+            const startDate = document.getElementById('receipt-start-date').value || filterStartDate;
+            const endDate = document.getElementById('receipt-end-date').value || filterEndDate;
+            
+            const filteredOrders = window.posState.orders.filter(o => {
+                const od = o.created_at.substring(0, 10);
+                return od >= startDate && od <= endDate;
+            });
+
             let html = '';
-            [...window.posState.orders].sort((a,b)=> new Date(b.created_at) - new Date(a.created_at)).forEach(o => {
+            [...filteredOrders].sort((a,b)=> new Date(b.created_at) - new Date(a.created_at)).forEach(o => {
                 const tableName = o.table_id === "0" ? "กลับบ้าน" : (window.posState.tables.find(t=>String(t.id) === String(o.table_id))?.name || o.table_id);
                 const d = new Date(o.created_at).toLocaleString('th-TH');
                 let statusBadge = o.status === 'paid' ? '<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-xs">สำเร็จ</span>' : (o.status === 'pending' ? '<span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs">ค้างชำระ</span>' : '<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs">ยกเลิกแล้ว</span>');
                 
                 let actions = `<button onclick="viewReceiptDetails('${o.id}')" class="bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white px-2 py-1.5 rounded-lg text-xs font-bold transition mx-1 shadow-sm" title="ดูรายละเอียด"><i class="fa-solid fa-eye"></i></button>`;
+                
                 if(o.status === 'paid') {
                     actions += `<button onclick="reprintReceipt('${o.id}')" class="bg-gray-100 text-gray-700 hover:bg-gray-600 hover:text-white px-2 py-1.5 rounded-lg text-xs font-bold transition mx-1 shadow-sm" title="ปริ้นซ้ำ"><i class="fa-solid fa-print"></i></button>`;
                     actions += `<button onclick="refundOrder('${o.id}')" class="bg-red-50 text-red-600 hover:bg-red-500 hover:text-white px-2 py-1.5 rounded-lg text-xs font-bold transition mx-1 shadow-sm" title="ยกเลิกและคืนเงิน"><i class="fa-solid fa-ban"></i></button>`;
+                } else if(o.status === 'pending') {
+                    actions += `<button onclick="payPendingOrder('${o.id}')" class="bg-orange-500 text-white hover:bg-orange-600 px-2 py-1.5 rounded-lg text-xs font-bold transition mx-1 shadow-sm" title="รับชำระเงิน"><i class="fa-solid fa-hand-holding-dollar"></i> รับเงิน</button>`;
                 }
 
                 html += `<tr class="border-b"><td class="p-3 text-xs text-gray-500">${d}</td><td class="p-3">${tableName}</td><td class="p-3 text-right font-bold text-emerald-600">฿${parseFloat(o.total).toFixed(2)}</td><td class="p-3 text-center">${statusBadge}</td><td class="p-3 text-center whitespace-nowrap">${actions}</td></tr>`;
             });
             const tb = document.getElementById('receipts-table');
             if(tb) tb.innerHTML = html || '<tr><td colspan="5" class="text-center py-10">ยังไม่มีใบเสร็จ</td></tr>';
-        }
+        };
+
+        window.payPendingOrder = (orderId) => {
+            const order = window.posState.orders.find(o => String(o.id) === String(orderId));
+            if(!order) return;
+            window.posState.currentTableId = order.table_id;
+            const select = document.getElementById('pos-table');
+            if(select) select.value = order.table_id;
+            window.posState.cart = [...order.items];
+            renderCart();
+            switchView('pos');
+            openCheckoutModal();
+        };
 
         window.viewReceiptDetails = (orderId) => {
             const order = window.posState.orders.find(o => String(o.id) === String(orderId));
@@ -1092,38 +1255,182 @@
             Swal.fire('สำเร็จ', 'ทำรายการคืนเงินแล้ว', 'success');
         };
 
+        window.exportProducts = () => {
+            const headers = ['ชื่อสินค้า', 'หมวดหมู่', 'ราคาขาย', 'คงเหลือ'];
+            const rows = window.posState.products.map(p => [
+                p.name,
+                window.posState.categories.find(c => String(c.id) === String(p.category_id))?.name || p.category_id,
+                p.price,
+                p.stock || 0
+            ]);
+            window.exportCSV(`products_export_${new Date().getTime()}.csv`, headers, rows);
+        };
+
+        window.handleImportProductsCSV = (event) => {
+            const file = event.target.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const text = e.target.result; 
+                const rows = text.split('\n').map(row => row.split(',').map(cell => cell.replace(/^"(.*)"$/, '$1').trim())); 
+                rows.shift(); 
+                const validRows = rows.filter(r => r.length >= 3 && r[0]); 
+                if (validRows.length > 0) {
+                    try {
+                        for (const row of validRows) {
+                            const name = row[0]; const price = parseFloat(row[2]) || 0; const stock = parseInt(row[3]) || 0;
+                            await addDoc(publicPath('products'), { name, category_id: 'all', price, cost: 0, stock, variants: { single: [], multiple: [] } });
+                        }
+                        Swal.fire('สำเร็จ', `นำเข้าสำเร็จ ${validRows.length} รายการ`, 'success');
+                    } catch (err) { Swal.fire('Error', err.message, 'error'); }
+                } else Swal.fire('Error', 'รูปแบบไฟล์ CSV ไม่ถูกต้อง', 'error');
+            }; 
+            reader.readAsText(file, 'UTF-8');
+        };
+
         function renderAdminProducts() {
             let html = '';
             window.posState.products.forEach(p => {
-                html += `<tr class="border-b hover:bg-gray-50"><td class="p-3 font-medium text-gray-800">${p.name}</td><td class="p-3 text-emerald-600 font-bold">฿${parseFloat(p.price).toFixed(2)}</td><td class="p-3 text-center"><button onclick="editProduct('${p.id}')" class="text-blue-500 mx-1"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="delProduct('${p.id}')" class="text-red-500 mx-1"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+                let imgHtml = p.image 
+                    ? `<img src="${p.image}" class="w-10 h-10 rounded-lg object-cover mx-auto shadow-sm border border-gray-200">`
+                    : `<div class="w-10 h-10 rounded-lg text-white flex items-center justify-center mx-auto shadow-sm bg-gray-400"><i class="fa-solid fa-box"></i></div>`;
+                
+                let safeVariants = p.variants ? JSON.stringify(p.variants).replace(/"/g, '&quot;') : '{}';
+                
+                html += `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-2 text-center">${imgHtml}</td>
+                    <td class="p-3 font-medium text-gray-800">${p.name}</td>
+                    <td class="p-3 text-gray-500">${window.posState.categories.find(c => String(c.id) === String(p.category_id))?.name || '-'}</td>
+                    <td class="p-3 text-emerald-600 font-bold">฿${parseFloat(p.price).toFixed(2)}</td>
+                    <td class="p-3 font-bold ${p.stock < 20 ? 'text-red-500' : 'text-emerald-500'}">${p.stock || 0} ชิ้น</td>
+                    <td class="p-3 text-center">
+                        <button onclick="editProduct('${p.id}')" class="text-blue-500 mx-1 bg-blue-50 p-1.5 rounded"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="delProduct('${p.id}')" class="text-red-500 mx-1 bg-red-50 p-1.5 rounded"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>`;
             });
             const tb = document.getElementById('admin-products-table');
             if(tb) tb.innerHTML = html;
         }
+
         window.openProductModal = () => {
             document.getElementById('product-form').reset();
             document.getElementById('form-product-id').value = '';
             document.getElementById('product-form-title').innerText = 'เพิ่มสินค้าใหม่';
+            
             let catHtml = ''; window.posState.categories.forEach(c => { catHtml += `<option value="${c.id}">${c.name}</option>`; });
             document.getElementById('form-product-cat').innerHTML = catHtml;
-            document.getElementById('modal-product-form').classList.remove('hidden'); document.getElementById('modal-product-form').classList.add('flex');
+            
+            document.getElementById('variant-single-container').innerHTML = '';
+            document.getElementById('variant-multiple-container').innerHTML = '';
+            window.clearProductImage();
+
+            document.getElementById('modal-product-form').classList.remove('hidden'); 
+            document.getElementById('modal-product-form').classList.add('flex');
         };
+
         window.editProduct = (id) => {
             const p = window.posState.products.find(x => x.id === id); if(!p) return;
             window.openProductModal();
-            document.getElementById('product-form-title').innerText = 'แก้ไขสินค้า'; document.getElementById('form-product-id').value = p.id;
-            document.getElementById('form-product-name').value = p.name; document.getElementById('form-product-cat').value = p.category_id;
-            document.getElementById('form-product-price').value = p.price; document.getElementById('form-product-cost').value = p.cost;
+            document.getElementById('product-form-title').innerText = 'แก้ไขสินค้า'; 
+            document.getElementById('form-product-id').value = p.id;
+            document.getElementById('form-product-name').value = p.name; 
+            document.getElementById('form-product-cat').value = p.category_id;
+            document.getElementById('form-product-price').value = p.price; 
+            document.getElementById('form-product-cost').value = p.cost || 0;
+            document.getElementById('form-product-stock').value = p.stock || 0;
+            
+            if(p.image) {
+                document.getElementById('form-product-image').value = p.image;
+                document.getElementById('form-product-preview').src = p.image;
+                document.getElementById('form-product-preview').classList.remove('hidden');
+                document.getElementById('form-product-placeholder').classList.add('hidden');
+                document.getElementById('prod_img_clear_btn').classList.remove('hidden');
+            } else {
+                window.clearProductImage();
+            }
+
+            if (p.variants) {
+                if (p.variants.single) p.variants.single.forEach(v => window.addVariantRow('single', v.active, v.name, v.price, v.cost));
+                if (p.variants.multiple) p.variants.multiple.forEach(v => window.addVariantRow('multiple', v.active, v.name, v.price, v.cost));
+            }
         };
-        window.saveProductData = async () => {
+
+        window.saveProductData = async (e) => {
+            e.preventDefault();
             const id = document.getElementById('form-product-id').value;
-            const data = { name: document.getElementById('form-product-name').value, category_id: document.getElementById('form-product-cat').value, price: parseFloat(document.getElementById('form-product-price').value), cost: parseFloat(document.getElementById('form-product-cost').value) };
+            
+            const singleItems = []; const multiItems = [];
+            document.querySelectorAll('.variant-single-row').forEach(row => { singleItems.push({ active: row.querySelector('.var-active').checked, name: row.querySelector('.var-name').value, price: parseFloat(row.querySelector('.var-price').value || 0), cost: parseFloat(row.querySelector('.var-cost').value || 0) }); });
+            document.querySelectorAll('.variant-multiple-row').forEach(row => { multiItems.push({ active: row.querySelector('.var-active').checked, name: row.querySelector('.var-name').value, price: parseFloat(row.querySelector('.var-price').value || 0), cost: parseFloat(row.querySelector('.var-cost').value || 0) }); });
+            
+            const data = { 
+                name: document.getElementById('form-product-name').value, 
+                category_id: document.getElementById('form-product-cat').value, 
+                price: parseFloat(document.getElementById('form-product-price').value), 
+                cost: parseFloat(document.getElementById('form-product-cost').value || 0),
+                stock: parseInt(document.getElementById('form-product-stock').value || 0),
+                image: document.getElementById('form-product-image').value || '',
+                variants: { single: singleItems, multiple: multiItems }
+            };
+
             try {
-                if(id) await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', String(id)), data); else await addDoc(publicPath('products'), data);
+                if(id) await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', String(id)), data); 
+                else await addDoc(publicPath('products'), data);
                 closeModal('modal-product-form'); Swal.fire('บันทึกสำเร็จ', '', 'success');
             } catch(e) { Swal.fire('Error', e.message, 'error'); }
         };
+
         window.delProduct = async (id) => { if(!confirm('ลบสินค้านี้?')) return; await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', String(id))); };
+
+        window.handleProductImageUpload = (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 300; let scaleSize = MAX_WIDTH / img.width; if(scaleSize > 1) scaleSize = 1;
+                    canvas.width = img.width * scaleSize; canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const base64 = canvas.toDataURL('image/jpeg', 0.8);
+                    
+                    document.getElementById('form-product-image').value = base64;
+                    document.getElementById('form-product-preview').src = base64;
+                    document.getElementById('form-product-preview').classList.remove('hidden');
+                    document.getElementById('form-product-placeholder').classList.add('hidden');
+                    document.getElementById('prod_img_clear_btn').classList.remove('hidden');
+                }; 
+                img.src = event.target.result;
+            }; 
+            reader.readAsDataURL(file);
+        };
+
+        window.clearProductImage = () => {
+            document.getElementById('form-product-image').value = '';
+            document.getElementById('form-product-preview').src = '';
+            document.getElementById('form-product-preview').classList.add('hidden');
+            document.getElementById('form-product-placeholder').classList.remove('hidden');
+            const clearBtn = document.getElementById('prod_img_clear_btn');
+            if(clearBtn) clearBtn.classList.add('hidden');
+        };
+
+        window.addVariantRow = (type, active = true, name = '', price = 0, cost = 0) => {
+            const containerId = type === 'single' ? 'variant-single-container' : 'variant-multiple-container'; 
+            const container = document.getElementById(containerId); if(!container) return; 
+            const row = document.createElement('div'); 
+            let accentColor = type === 'single' ? 'blue' : 'emerald'; 
+            let safeName = String(name).replace(/"/g, '&quot;');
+            row.className = `flex items-center gap-1 bg-gray-50 p-1.5 rounded border border-gray-200 hover:border-${accentColor}-300 transition variant-${type}-row`;
+            row.innerHTML = `
+                <div class="w-12 text-center"><input type="checkbox" class="var-active w-4 h-4 text-${accentColor}-600 rounded cursor-pointer" ${active ? 'checked' : ''}></div>
+                <div class="flex-1"><input type="text" class="var-name w-full p-1.5 border rounded outline-none focus:ring-1 focus:ring-${accentColor}-300 bg-white text-xs font-bold" value="${safeName}" placeholder="ชื่อ"></div>
+                <div class="w-20"><input type="number" step="0.01" class="var-price w-full p-1.5 border rounded outline-none focus:ring-1 focus:ring-${accentColor}-300 bg-white text-right font-bold text-gray-700 text-xs" value="${price}" placeholder="ราคา"></div>
+                <div class="w-20"><input type="number" step="0.01" class="var-cost w-full p-1.5 border rounded outline-none focus:ring-1 focus:ring-${accentColor}-300 bg-white text-right text-gray-500 text-xs" value="${cost}" placeholder="ทุน"></div>
+                <div class="w-8 text-center"><button type="button" onclick="this.closest('.variant-${type}-row').remove()" class="text-gray-400 hover:text-red-500 transition"><i class="fa-solid fa-xmark"></i></button></div>
+            `;
+            container.appendChild(row); container.scrollTop = container.scrollHeight;
+        };
 
         function renderAdminCategories() {
             let html = '';
