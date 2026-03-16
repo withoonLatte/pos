@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-bold-rounded/css/uicons-bold-rounded.css'>
     
-    <!-- SweetAlert2 & Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -50,17 +49,14 @@
 </head>
 <body class="flex h-screen w-screen overflow-hidden">
 
-    <!-- พื้นที่สำหรับพิมพ์ใบเสร็จ -->
     <div id="print-area" class="print-only text-black text-sm"></div>
 
-    <!-- หน้าจอโหลดข้อมูล (Loading) -->
     <div id="loading-screen" class="fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center">
         <i class="fi fi-br-qrcode-menu text-6xl text-emerald-500 animate-bounce mb-4"></i>
         <h2 class="text-xl font-bold text-gray-700">กำลังเชื่อมต่อฐานข้อมูล Real-time...</h2>
         <p class="text-sm text-gray-400 mt-2">Connecting to Firebase</p>
     </div>
 
-    <!-- แถบเมนูด้านซ้าย (Sidebar) -->
     <aside id="main-sidebar" class="hidden md:flex flex-col z-50 h-full border-r shadow-sm sidebar-bg sidebar-transition w-64 shrink-0">
         <div class="h-14 flex items-center justify-between px-4 border-b border-gray-700 font-bold text-white shrink-0">
             <div class="flex items-center sidebar-text text-lg overflow-hidden whitespace-nowrap">
@@ -83,10 +79,8 @@
         </nav>
     </aside>
 
-    <!-- พื้นที่แสดงเนื้อหาหลัก -->
     <main id="main-content" class="flex-1 flex flex-col h-screen overflow-hidden bg-gray-100 relative hidden">
         
-        <!-- Header -->
         <header id="main-header" class="h-14 bg-white text-gray-800 border-b flex items-center justify-between px-4 shadow-sm z-10 shrink-0">
             <div class="flex items-center">
                 <button onclick="toggleMobileMenu()" class="md:hidden mr-4 text-gray-600"><i class="fa-solid fa-bars fa-lg"></i></button>
@@ -97,36 +91,27 @@
             </div>
         </header>
 
-        <!-- View: POS -->
         <div id="view-pos" class="view-section active p-2 md:p-4">
             <div class="flex flex-col lg:flex-row h-full gap-4 overflow-hidden">
-                <!-- ส่วนสินค้า -->
                 <div class="flex-1 flex flex-col bg-white rounded-xl shadow-sm border h-full overflow-hidden shrink-0 relative">
                     <div class="p-3 border-b bg-gray-50 flex gap-2 shrink-0">
                         <select id="pos-table" onchange="loadTableOrder()" class="flex-1 p-2 border rounded-lg focus:ring-emerald-500 outline-none text-sm font-bold text-gray-700 bg-white shadow-sm">
                             <option value="0">สั่งกลับบ้าน (Takeaway)</option>
-                            <!-- ตัวเลือกโต๊ะจะถูกสร้างด้วย JS -->
-                        </select>
+                            </select>
                     </div>
-                    <!-- หมวดหมู่ -->
                     <div class="p-3 bg-white border-b flex flex-wrap gap-2 shrink-0 items-center" id="pos-category-filters">
-                        <!-- ปุ่มหมวดหมู่จะถูกสร้างด้วย JS -->
-                    </div>
-                    <!-- รายการสินค้า -->
+                        </div>
                     <div class="p-3 overflow-y-auto flex-1 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 content-start" id="pos-product-grid">
-                        <!-- สินค้าจะถูกสร้างด้วย JS -->
-                    </div>
+                        </div>
                 </div>
 
-                <!-- ส่วนตะกร้า -->
                 <div class="w-full lg:w-[350px] bg-white rounded-xl shadow-sm border flex flex-col h-full shrink-0">
                     <div class="p-4 border-b bg-[#f8fafc] flex justify-between items-center shrink-0">
                         <h2 class="font-bold text-gray-700"><i class="fa-solid fa-cart-shopping text-cyan-500 mr-2"></i>ออเดอร์ปัจจุบัน</h2>
                         <button onclick="clearCart()" class="text-sm text-red-500 hover:text-red-700 font-medium"><i class="fa-solid fa-trash mr-1"></i>ล้าง</button>
                     </div>
                     <div id="pos-cart-items" class="flex-1 overflow-y-auto p-3 space-y-2">
-                        <!-- รายการในตะกร้า -->
-                    </div>
+                        </div>
                     <div class="p-4 border-t bg-gray-50 shrink-0">
                         <div class="flex justify-between mb-4 text-2xl font-bold text-gray-800">
                             <span>ยอดชำระ</span>
@@ -140,19 +125,16 @@
             </div>
         </div>
 
-        <!-- View: Kitchen -->
         <div id="view-kitchen" class="view-section p-2 md:p-4 overflow-hidden">
             <div class="bg-white rounded-xl border p-4 shadow-sm h-full flex flex-col">
                 <div class="flex justify-between items-center mb-6 shrink-0">
                     <h2 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-fire-burner text-orange-500 mr-2"></i> ออเดอร์ในครัว (รอทำ)</h2>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto pb-6 content-start flex-1" id="kitchen-grid">
-                    <!-- รายการครัวจะถูกสร้างด้วย JS -->
-                </div>
+                    </div>
             </div>
         </div>
 
-        <!-- View: Admin Dashboard -->
         <div id="view-admin" class="view-section p-2 md:p-4 overflow-y-auto">
             <div class="bg-white rounded-xl shadow-sm border mb-6 flex flex-col overflow-hidden">
                 <div class="p-4 border-b bg-gray-50 font-bold text-gray-800 flex justify-between">
@@ -192,16 +174,13 @@
                             </tr>
                         </thead>
                         <tbody id="dash-orders-table">
-                            <!-- JS จะดึงข้อมูลมาใส่ -->
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- View: Products -->
         <div id="view-products" class="view-section p-2 md:p-4 overflow-y-auto">
-            <!-- ส่วนจัดการสินค้าและหมวดหมู่ -->
             <div class="bg-white rounded-xl border shadow-sm mb-6 flex flex-col">
                 <div class="p-4 border-b flex justify-between items-center bg-gray-50 gap-2 shrink-0">
                     <h2 class="font-bold text-lg text-gray-800"><i class="fa-solid fa-boxes-stacked mr-2 text-emerald-500"></i> จัดการสินค้า / เมนู</h2>
@@ -223,7 +202,6 @@
                 </div>
             </div>
 
-            <!-- จัดการหมวดหมู่ -->
             <div class="bg-white rounded-xl border shadow-sm flex flex-col">
                 <div class="p-4 border-b flex justify-between items-center bg-gray-50 gap-2 shrink-0">
                     <h2 class="font-bold text-lg text-gray-800"><i class="fa-solid fa-tags mr-2 text-cyan-500"></i> จัดการหมวดหมู่</h2>
@@ -245,7 +223,6 @@
             </div>
         </div>
 
-        <!-- View: Receipts -->
         <div id="view-receipts" class="view-section p-2 md:p-4 overflow-y-auto">
             <div class="bg-white rounded-xl border shadow-sm h-full flex flex-col relative overflow-hidden">
                 <div class="p-4 border-b flex justify-between items-center bg-gray-50 gap-2">
@@ -268,7 +245,6 @@
             </div>
         </div>
 
-        <!-- View: Tables -->
         <div id="view-tables" class="view-section p-2 md:p-4 overflow-y-auto">
             <div class="bg-white rounded-xl border shadow-sm h-full flex flex-col">
                 <div class="p-4 border-b flex justify-between items-center bg-gray-50">
@@ -276,12 +252,10 @@
                     <button onclick="addTable()" class="bg-gradient text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:shadow-md transition"><i class="fa-solid fa-plus mr-1"></i> เพิ่มโต๊ะใหม่</button>
                 </div>
                 <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 overflow-y-auto" id="tables-grid">
-                    <!-- โต๊ะจะถูกสร้างด้วย JS -->
-                </div>
+                    </div>
             </div>
         </div>
 
-        <!-- View: Settings -->
         <div id="view-settings" class="view-section p-2 md:p-4 overflow-y-auto">
             <div class="max-w-2xl mx-auto w-full bg-white rounded-xl border shadow-sm">
                 <div class="p-4 border-b bg-gray-50 font-bold text-gray-800"><i class="fa-solid fa-shop mr-2 text-cyan-600"></i> ตั้งค่าร้านค้า</div>
@@ -305,7 +279,6 @@
 
     </main>
 
-    <!-- View: Customer (Mobile Ordering) -->
     <div id="view-customer" class="view-section h-screen w-screen bg-gray-100 hidden relative overflow-hidden flex-col">
         <div class="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white p-5 shadow-md shrink-0 rounded-b-2xl">
             <h1 class="text-2xl font-bold text-center mb-1 drop-shadow-sm" id="customer-shop-name">CDZ POS</h1>
@@ -326,34 +299,66 @@
         </div>
     </div>
 
-    <!-- Modals -->
-    <!-- Checkout Modal -->
     <div id="modal-checkout" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[100] backdrop-blur-sm p-4">
         <div class="bg-white rounded-2xl w-full max-w-[400px] p-0 shadow-2xl relative overflow-hidden flex flex-col">
             <div class="bg-gradient text-white p-4 flex justify-between items-center shrink-0">
                 <h3 class="text-lg font-bold">ยืนยันการรับชำระเงิน</h3>
                 <button onclick="closeModal('modal-checkout')" class="text-white hover:text-red-200"><i class="fa-solid fa-xmark fa-lg"></i></button>
             </div>
-            <div class="p-6 text-center overflow-y-auto bg-white">
+            <div class="p-6 text-center overflow-y-auto bg-white relative">
                 <p class="text-gray-500 mb-1">ยอดที่ต้องชำระสุทธิ</p>
                 <p class="text-5xl font-extrabold text-emerald-600 mb-6 drop-shadow-sm">฿<span id="modal-checkout-total">0.00</span></p>
 
-                <div class="space-y-3">
-                    <button onclick="processCheckout('qr')" class="w-full border-2 border-cyan-500 text-cyan-600 hover:bg-cyan-50 font-bold py-4 rounded-xl text-lg transition flex justify-center items-center">
+                <div id="checkout-buttons" class="space-y-3">
+                    <button onclick="generatePromptPayQR()" class="w-full border-2 border-cyan-500 text-cyan-600 hover:bg-cyan-50 font-bold py-4 rounded-xl text-lg transition flex justify-center items-center">
                         <i class="fa-solid fa-qrcode mr-2"></i> สร้าง QR พร้อมเพย์ / โอนเงิน
                     </button>
-                    <button onclick="processCheckout('cash')" class="w-full bg-gray-100 hover:bg-emerald-50 text-gray-700 hover:text-emerald-600 border border-gray-300 font-bold py-4 rounded-xl text-lg transition flex justify-center items-center">
+                    <button onclick="showCashSection()" class="w-full bg-gray-100 hover:bg-emerald-50 text-gray-700 hover:text-emerald-600 border border-gray-300 font-bold py-4 rounded-xl text-lg transition flex justify-center items-center">
                         <i class="fa-solid fa-coins mr-2"></i> รับเป็นเงินสด
                     </button>
                     <button onclick="processCheckout('pending')" class="w-full bg-orange-100 text-orange-600 border border-orange-300 font-bold py-3 rounded-xl transition flex justify-center items-center mt-2">
                         <i class="fa-solid fa-clock mr-2"></i> บันทึกออเดอร์ (ค้างชำระ)
                     </button>
                 </div>
+
+                <div id="cash-section" class="hidden flex-col items-center justify-center border-2 border-emerald-200 p-4 rounded-xl bg-emerald-50 mb-2">
+                    <div class="w-full mb-3 text-left">
+                        <label class="block text-sm font-bold text-emerald-800 mb-2">ระบุยอดเงินที่รับมา</label>
+                        <input type="number" id="cash-received" oninput="calculateChange()" class="w-full p-3 text-2xl font-bold text-right border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-emerald-700 bg-white shadow-inner">
+                    </div>
+                    <div class="flex gap-2 w-full mb-4">
+                        <button onclick="setCashAmount('exact')" class="flex-1 bg-white border border-gray-300 py-2 rounded-lg font-bold text-gray-700 hover:bg-gray-100 transition text-sm">พอดี</button>
+                        <button onclick="setCashAmount(100)" class="flex-1 bg-white border border-gray-300 py-2 rounded-lg font-bold text-gray-700 hover:bg-gray-100 transition text-sm">+100</button>
+                        <button onclick="setCashAmount(500)" class="flex-1 bg-white border border-gray-300 py-2 rounded-lg font-bold text-gray-700 hover:bg-gray-100 transition text-sm">+500</button>
+                        <button onclick="setCashAmount(1000)" class="flex-1 bg-white border border-gray-300 py-2 rounded-lg font-bold text-gray-700 hover:bg-gray-100 transition text-sm">+1000</button>
+                    </div>
+                    <div class="w-full bg-white p-3 rounded-lg border border-emerald-100 flex justify-between items-center mb-4 shadow-sm">
+                        <span class="font-bold text-gray-500">ทอนเงิน:</span>
+                        <span id="change-amount" class="text-2xl font-extrabold text-emerald-600">฿0.00</span>
+                    </div>
+                    <div class="flex gap-2 w-full">
+                        <button onclick="hideCashSection()" class="w-1/3 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 rounded-xl transition">ย้อนกลับ</button>
+                        <button id="confirm-cash-btn" onclick="processCheckout('cash')" class="w-2/3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl transition shadow-md flex justify-center items-center">
+                            <i class="fa-solid fa-check-circle mr-2"></i> ยืนยันรับเงิน
+                        </button>
+                    </div>
+                </div>
+
+                <div id="pp-section" class="hidden flex-col items-center justify-center border-2 border-dashed border-cyan-300 p-4 rounded-xl bg-cyan-50">
+                    <p class="text-sm font-bold text-cyan-800 mb-2">ให้ลูกค้าสแกน QR Code นี้</p>
+                    <img id="modal-pp-img" src="" class="w-48 h-48 mix-blend-multiply mb-4" alt="QR Code">
+                    <div class="flex gap-2 w-full">
+                        <button onclick="hidePPSection()" class="w-1/3 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 rounded-xl transition">ย้อนกลับ</button>
+                        <button onclick="processCheckout('qr')" class="w-2/3 bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl transition shadow-md">
+                            <i class="fa-solid fa-check mr-1"></i> โอนเงินสำเร็จแล้ว
+                        </button>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <!-- Product Form Modal -->
     <div id="modal-product-form" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[100] backdrop-blur-sm p-4">
         <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl relative overflow-hidden flex flex-col">
             <div class="bg-emerald-500 text-white p-4 flex justify-between items-center">
@@ -373,7 +378,6 @@
         </div>
     </div>
 
-    <!-- Category Form Modal -->
     <div id="modal-category-form" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[100] backdrop-blur-sm p-4">
         <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl relative overflow-hidden flex flex-col">
             <div class="bg-cyan-500 text-white p-4 flex justify-between items-center">
@@ -388,63 +392,47 @@
         </div>
     </div>
 
-    <!-- Firebase Logic -->
     <script type="module">
-        // Firebase Setup & Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // แก้ไขข้อผิดพลาด SyntaxError จาก PHP tag โดยใช้ตัวแปรจากสภาพแวดล้อมโดยตรง
-        const firebaseConfig = {
-  apiKey: "AIzaSyAhdAsDQm78kBfHVTZWf5Kkf_LTW3pJxNA",
-  authDomain: "cdz-pos-8a237.firebaseapp.com",
-  projectId: "cdz-pos-8a237",
-  storageBucket: "cdz-pos-8a237.firebasestorage.app",
-  messagingSenderId: "453232621158",
-  appId: "1:453232621158:web:5c27bfe44bf98fbe4ddfa7"
-};
+        // ลบ PHP tag ทิ้งทั้งหมด และให้สร้างตัวแปร Object ตรงๆ เพื่อป้องกัน Error
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'cdz-pos-app';
         
-        // Data Paths (Public for cross-device shop sync)
         const publicPath = (colName) => collection(db, 'artifacts', appId, 'public', 'data', colName);
         
-        // Global State
         window.posState = {
             products: [], categories: [], tables: [], orders: [], settings: { shop_name: 'CDZ POS' },
-            cart: [], currentTableId: 0, currentView: 'pos'
+            cart: [], currentTableId: "0", currentView: 'pos'
         };
 
-        // Authentication
         let unsubscribeListeners = [];
         const initAuth = async () => {
-            try {
+            try { 
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
-                    await signInAnonymously(auth);
+                    await signInAnonymously(auth); 
                 }
-            } catch (err) { console.error("Auth error", err); }
+            } 
+            catch (err) { console.error("Auth error", err); }
         };
 
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                setupRealtimeListeners();
-            }
+            if (user) setupRealtimeListeners();
         });
 
-        // Initialize App
         window.onload = () => {
             initAuth();
-            
-            // Check URL for customer view
             const urlParams = new URLSearchParams(window.location.search);
             const viewParam = urlParams.get('view');
             if (viewParam === 'customer') {
-                window.posState.currentTableId = parseInt(urlParams.get('table_id')) || 1;
+                window.posState.currentTableId = urlParams.get('table_id') || "1";
                 document.getElementById('main-sidebar').classList.add('hidden');
                 document.getElementById('main-header').classList.add('hidden');
                 showView('customer');
@@ -456,43 +444,35 @@
             }
         };
 
-        // Real-time Listeners
         function setupRealtimeListeners() {
-            unsubscribeListeners.forEach(u => u()); // clear old
+            unsubscribeListeners.forEach(u => u());
             unsubscribeListeners = [];
 
-            // Categories
             unsubscribeListeners.push(onSnapshot(publicPath('categories'), (snap) => {
                 window.posState.categories = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderCategories();
-            }, e => console.error(e)));
+            }, e => console.error("Firebase error categories:", e)));
 
-            // Products
             unsubscribeListeners.push(onSnapshot(publicPath('products'), (snap) => {
                 window.posState.products = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderProducts();
                 renderAdminProducts();
-            }, e => console.error(e)));
+            }, e => console.error("Firebase error products:", e)));
 
-            // Tables
             unsubscribeListeners.push(onSnapshot(publicPath('tables'), (snap) => {
                 window.posState.tables = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderTables();
-            }, e => console.error(e)));
+                if(window.posState.currentView === 'tables') renderTablesAdmin();
+            }, e => console.error("Firebase error tables:", e)));
 
-            // Orders
             unsubscribeListeners.push(onSnapshot(publicPath('orders'), (snap) => {
                 window.posState.orders = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                // Update specific views based on orders
                 renderKitchen();
                 renderAdminDashboard();
                 renderReceipts();
-                checkPendingCustomerOrders();
-                
                 document.getElementById('loading-screen').style.display = 'none';
-            }, e => console.error(e)));
+            }, e => console.error("Firebase error orders:", e)));
 
-            // Settings
             unsubscribeListeners.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), (docSnap) => {
                 if (docSnap.exists()) {
                     window.posState.settings = docSnap.data();
@@ -502,12 +482,9 @@
                     document.getElementById('set-receipt-footer').value = window.posState.settings.receipt_footer || '';
                     if(document.getElementById('customer-shop-name')) document.getElementById('customer-shop-name').innerText = window.posState.settings.shop_name || 'CDZ POS';
                 }
-            }, e => console.error(e)));
+            }, e => console.error("Firebase error settings:", e)));
         }
 
-        // ==========================================
-        // UI Navigation & View Management
-        // ==========================================
         window.switchView = (viewId) => { showView(viewId); toggleMobileMenu(true); };
         
         function showView(viewId) {
@@ -516,15 +493,11 @@
             document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('sidebar-active'));
             
             const targetView = document.getElementById(`view-${viewId}`);
-            if(targetView) {
-                targetView.classList.add('active');
-                if(viewId !== 'customer') targetView.classList.add('flex');
-            }
+            if(targetView) { targetView.classList.add('active'); if(viewId !== 'customer') targetView.classList.add('flex'); }
             
             const navBtn = document.getElementById(`nav-${viewId}`);
             if(navBtn) navBtn.classList.add('sidebar-active');
             
-            // View specific refreshes
             if(viewId === 'pos') { renderTables(); renderProducts(); renderCart(); }
             if(viewId === 'kitchen') renderKitchen();
             if(viewId === 'admin') renderAdminDashboard();
@@ -537,13 +510,9 @@
         window.toggleSidebar = () => { document.getElementById('main-sidebar').classList.toggle('sidebar-collapsed'); };
         window.toggleMobileMenu = (forceClose = false) => { 
             const sb = document.getElementById('main-sidebar');
-            if(forceClose) sb.classList.add('hidden');
-            else sb.classList.toggle('hidden');
+            if(forceClose) sb.classList.add('hidden'); else sb.classList.toggle('hidden');
         };
 
-        // ==========================================
-        // View: POS & Customer
-        // ==========================================
         let currentFilter = 'all';
         window.filterCategory = (catId, btn) => {
             currentFilter = catId;
@@ -554,13 +523,9 @@
 
         function renderCategories() {
             let html = `<button onclick="filterCategory('all', this)" class="cat-btn px-4 py-1.5 rounded-full text-sm font-bold bg-emerald-500 text-white shadow-sm whitespace-nowrap transition">ทั้งหมด</button>`;
-            window.posState.categories.forEach(c => {
-                html += `<button onclick="filterCategory('${c.id}', this)" class="cat-btn px-4 py-1.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-gray-200 whitespace-nowrap transition">${c.name}</button>`;
-            });
-            const pCont = document.getElementById('pos-category-filters');
-            const cCont = document.getElementById('customer-categories');
-            if(pCont) pCont.innerHTML = html;
-            if(cCont) cCont.innerHTML = html;
+            window.posState.categories.forEach(c => { html += `<button onclick="filterCategory('${c.id}', this)" class="cat-btn px-4 py-1.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-gray-200 whitespace-nowrap transition">${c.name}</button>`; });
+            if(document.getElementById('pos-category-filters')) document.getElementById('pos-category-filters').innerHTML = html;
+            if(document.getElementById('customer-categories')) document.getElementById('customer-categories').innerHTML = html;
             renderProducts();
         }
 
@@ -595,35 +560,23 @@
         }
 
         window.loadTableOrder = () => {
-            const tableId = document.getElementById('pos-table').value;
+            const tableId = String(document.getElementById('pos-table').value);
             window.posState.currentTableId = tableId;
-            // ดึงออเดอร์ของโต๊ะนี้ที่ยังค้างชำระ
-            const pendingOrder = window.posState.orders.find(o => o.table_id === tableId && o.status === 'pending');
-            if (pendingOrder) {
-                window.posState.cart = [...pendingOrder.items];
-            } else {
-                window.posState.cart = [];
-            }
+            const pendingOrder = window.posState.orders.find(o => String(o.table_id) === tableId && o.status === 'pending');
+            window.posState.cart = pendingOrder ? [...pendingOrder.items] : [];
             renderCart();
         };
 
-        // ==========================================
-        // Cart Logic
-        // ==========================================
         window.addToCart = (id, name, price) => {
             let item = window.posState.cart.find(i => i.id === id);
-            if (item) item.qty += 1;
-            else window.posState.cart.push({ id, name, price: parseFloat(price), qty: 1 });
-            
-            if(window.posState.currentView === 'customer') renderCustomerCart();
-            else renderCart();
+            if (item) item.qty += 1; else window.posState.cart.push({ id, name, price: parseFloat(price), qty: 1 });
+            if(window.posState.currentView === 'customer') renderCustomerCart(); else renderCart();
         };
 
         window.updateQty = (index, change) => {
             window.posState.cart[index].qty += change;
             if (window.posState.cart[index].qty <= 0) window.posState.cart.splice(index, 1);
-            if(window.posState.currentView === 'customer') renderCustomerCart();
-            else renderCart();
+            if(window.posState.currentView === 'customer') renderCustomerCart(); else renderCart();
         };
 
         window.clearCart = () => { window.posState.cart = []; renderCart(); renderCustomerCart(); };
@@ -635,18 +588,14 @@
             
             if (window.posState.cart.length === 0) {
                 cont.innerHTML = '<div class="text-center text-gray-400 mt-10 text-sm">ยังไม่มีรายการอาหาร</div>';
-                document.getElementById('pos-cart-total').innerText = '0.00';
-                return;
+                document.getElementById('pos-cart-total').innerText = '0.00'; return;
             }
 
             window.posState.cart.forEach((item, i) => {
                 let rowTotal = item.price * item.qty; total += rowTotal;
                 html += `
                 <div class="flex justify-between items-center bg-white p-2.5 border rounded-lg shadow-sm text-sm mb-2">
-                    <div class="flex-1">
-                        <div class="font-bold text-gray-800">${item.name}</div>
-                        <div class="text-gray-500 text-xs">฿${item.price.toFixed(2)}</div>
-                    </div>
+                    <div class="flex-1"><div class="font-bold text-gray-800">${item.name}</div><div class="text-gray-500 text-xs">฿${item.price.toFixed(2)}</div></div>
                     <div class="flex items-center gap-1 shrink-0">
                         <button onclick="updateQty(${i}, -1)" class="w-6 h-6 bg-gray-200 text-gray-700 rounded font-bold hover:bg-gray-300">-</button>
                         <span class="w-5 text-center font-medium">${item.qty}</span>
@@ -660,23 +609,77 @@
         }
 
         // ==========================================
-        // Checkout & Ordering
+        // Checkout & UI Modals
         // ==========================================
         window.openCheckoutModal = () => {
             if (window.posState.cart.length === 0) return Swal.fire('ตะกร้าว่าง', 'กรุณาเลือกสินค้าก่อน', 'warning');
             let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
             document.getElementById('modal-checkout-total').innerText = total.toFixed(2);
+            document.getElementById('checkout-buttons').classList.remove('hidden');
+            document.getElementById('cash-section').classList.add('hidden');
+            document.getElementById('cash-section').classList.remove('flex');
+            document.getElementById('pp-section').classList.add('hidden');
+            document.getElementById('pp-section').classList.remove('flex');
             document.getElementById('modal-checkout').classList.remove('hidden');
             document.getElementById('modal-checkout').classList.add('flex');
         };
 
-        window.closeModal = (id) => {
-            document.getElementById(id).classList.add('hidden');
-            document.getElementById(id).classList.remove('flex');
+        window.closeModal = (id) => { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); };
+
+        // Cash Calculator
+        window.showCashSection = () => {
+            document.getElementById('checkout-buttons').classList.add('hidden');
+            const cashSec = document.getElementById('cash-section');
+            cashSec.classList.remove('hidden'); cashSec.classList.add('flex');
+            let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+            document.getElementById('cash-received').value = total;
+            window.calculateChange();
+            setTimeout(() => { let input = document.getElementById('cash-received'); input.focus(); input.select(); }, 100);
+        };
+        window.hideCashSection = () => {
+            document.getElementById('cash-section').classList.add('hidden'); document.getElementById('cash-section').classList.remove('flex');
+            document.getElementById('checkout-buttons').classList.remove('hidden');
+        };
+        window.setCashAmount = (amt) => {
+            let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+            let input = document.getElementById('cash-received');
+            if (amt === 'exact') input.value = total; else input.value = parseFloat(input.value || 0) + amt;
+            window.calculateChange();
+        };
+        window.calculateChange = () => {
+            let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+            let received = parseFloat(document.getElementById('cash-received').value) || 0;
+            let change = received - total;
+            let changeEl = document.getElementById('change-amount');
+            let btn = document.getElementById('confirm-cash-btn');
+            if (change < 0) {
+                changeEl.innerText = "เงินไม่พอ"; changeEl.classList.remove('text-gray-800', 'text-emerald-600'); changeEl.classList.add('text-red-500');
+                btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                changeEl.innerText = "฿" + change.toFixed(2); changeEl.classList.remove('text-red-500', 'text-gray-800'); changeEl.classList.add('text-emerald-600');
+                btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
         };
 
+        // PromptPay QR
+        window.generatePromptPayQR = () => {
+            const ppNo = window.posState.settings.promptpay || '';
+            if(!ppNo) return Swal.fire('ผิดพลาด', 'ยังไม่ได้ตั้งค่าเบอร์พร้อมเพย์', 'error');
+            let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+            const qrUrl = `https://promptpay.io/${ppNo}/${total.toFixed(2)}.png`;
+            document.getElementById('modal-pp-img').src = qrUrl;
+            document.getElementById('checkout-buttons').classList.add('hidden');
+            const ppSec = document.getElementById('pp-section');
+            ppSec.classList.remove('hidden'); ppSec.classList.add('flex');
+        };
+        window.hidePPSection = () => {
+            document.getElementById('pp-section').classList.add('hidden'); document.getElementById('pp-section').classList.remove('flex');
+            document.getElementById('checkout-buttons').classList.remove('hidden');
+        };
+
+        // Process Checkout Core Logic
         window.processCheckout = async (method) => {
-            const tableId = window.posState.currentTableId;
+            const tableId = String(window.posState.currentTableId); // Fix: Force to String to prevent Firebase crash
             let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
             
             const newOrder = {
@@ -685,37 +688,39 @@
                 status: method === 'pending' ? 'pending' : 'paid',
                 payment_method: method,
                 created_at: new Date().toISOString(),
-                items: window.posState.cart.map(i => ({...i, status: 'pending'})) // send to kitchen
+                items: window.posState.cart.map(i => ({...i, status: 'pending'}))
             };
 
             try {
-                // If there's an existing pending order for this table, we update it. Otherwise create new.
-                const existingOrder = window.posState.orders.find(o => o.table_id === tableId && o.status === 'pending');
+                const existingOrder = window.posState.orders.find(o => String(o.table_id) === tableId && o.status === 'pending');
+                
+                // Fix: Firebase doc() requires string IDs
                 if (existingOrder && method !== 'pending') {
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', existingOrder.id), {
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', String(existingOrder.id)), {
                         status: 'paid', payment_method: method, total: total, items: newOrder.items
                     });
                 } else if (!existingOrder) {
                     await addDoc(publicPath('orders'), newOrder);
-                } else if(existingOrder && method === 'pending'){
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', existingOrder.id), {
+                } else if (existingOrder && method === 'pending'){
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', String(existingOrder.id)), {
                         total: total, items: newOrder.items
                     });
                 }
 
-                // Update table status if paid vs pending
                 if (tableId !== "0") {
                     const tableRef = doc(db, 'artifacts', appId, 'public', 'data', 'tables', tableId);
                     await updateDoc(tableRef, { status: method === 'pending' ? 'occupied' : 'free' });
                 }
 
-                Swal.fire({title: 'สำเร็จ!', text: 'บันทึกออเดอร์เรียบร้อยแล้ว', icon: 'success', timer: 1500});
+                Swal.fire({title: 'สำเร็จ!', text: 'บันทึกออเดอร์เรียบร้อยแล้ว', icon: 'success', timer: 1500, showConfirmButton: false});
                 closeModal('modal-checkout');
                 window.posState.cart = [];
                 renderCart();
-                document.getElementById('pos-table').value = "0"; // reset to takeaway
+                document.getElementById('pos-table').value = "0";
+                window.posState.currentTableId = "0";
             } catch (e) {
-                Swal.fire('ข้อผิดพลาด', e.message, 'error');
+                console.error(e);
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้: ' + e.message, 'error');
             }
         };
 
@@ -725,12 +730,10 @@
         function renderKitchen() {
             const grid = document.getElementById('kitchen-grid');
             if(!grid) return;
-            let pendingItemsCount = 0;
-            let html = '';
+            let pendingItemsCount = 0; let html = '';
             
             window.posState.orders.forEach(o => {
-                const tableName = o.table_id === "0" ? "สั่งกลับบ้าน" : (window.posState.tables.find(t=>t.id === o.table_id)?.name || `โต๊ะ ${o.table_id}`);
-                
+                const tableName = o.table_id === "0" ? "สั่งกลับบ้าน" : (window.posState.tables.find(t=>String(t.id) === String(o.table_id))?.name || `โต๊ะ ${o.table_id}`);
                 o.items.forEach((item, index) => {
                     if(item.status === 'pending') {
                         pendingItemsCount++;
@@ -753,60 +756,39 @@
             grid.innerHTML = html;
 
             const badge = document.getElementById('nav-kitchen-badge');
-            if(badge) {
-                badge.innerText = pendingItemsCount;
-                badge.classList.toggle('hidden', pendingItemsCount === 0);
-            }
+            if(badge) { badge.innerText = pendingItemsCount; badge.classList.toggle('hidden', pendingItemsCount === 0); }
         }
 
         window.markItemDone = async (orderId, itemIndex) => {
             const order = window.posState.orders.find(o => o.id === orderId);
             if(!order) return;
-            let newItems = [...order.items];
-            newItems[itemIndex].status = 'served';
-            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', orderId), { items: newItems });
+            let newItems = [...order.items]; newItems[itemIndex].status = 'served';
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', String(orderId)), { items: newItems });
         };
 
         // ==========================================
         // Admin Dashboard
         // ==========================================
         function renderAdminDashboard() {
-            let rev = 0, ordCount = 0, ref = 0, cost = 0;
-            let dailyData = {};
-
+            let rev = 0, ordCount = 0, ref = 0;
             window.posState.orders.forEach(o => {
-                let dStr = o.created_at.substring(0, 10);
-                if(!dailyData[dStr]) dailyData[dStr] = { sales: 0, refunds: 0, cost: 0 };
-                
-                if(o.status === 'paid') {
-                    rev += parseFloat(o.total);
-                    ordCount++;
-                    dailyData[dStr].sales += parseFloat(o.total);
-                } else if(o.status === 'cancelled') {
-                    ref += parseFloat(o.total);
-                    dailyData[dStr].refunds += parseFloat(o.total);
-                }
+                if(o.status === 'paid') { rev += parseFloat(o.total); ordCount++; } 
+                else if(o.status === 'cancelled') { ref += parseFloat(o.total); }
             });
 
-            document.getElementById('dash-revenue').innerText = rev.toLocaleString(undefined, {minimumFractionDigits:2});
-            document.getElementById('dash-orders').innerText = ordCount;
-            document.getElementById('dash-refunds').innerText = ref.toLocaleString(undefined, {minimumFractionDigits:2});
-            document.getElementById('dash-net').innerText = (rev - ref).toLocaleString(undefined, {minimumFractionDigits:2});
+            if(document.getElementById('dash-revenue')) {
+                document.getElementById('dash-revenue').innerText = rev.toLocaleString(undefined, {minimumFractionDigits:2});
+                document.getElementById('dash-orders').innerText = ordCount;
+                document.getElementById('dash-refunds').innerText = ref.toLocaleString(undefined, {minimumFractionDigits:2});
+                document.getElementById('dash-net').innerText = (rev - ref).toLocaleString(undefined, {minimumFractionDigits:2});
+            }
 
-            // Orders Table
             let html = '';
             [...window.posState.orders].sort((a,b)=> new Date(b.created_at) - new Date(a.created_at)).forEach(o => {
-                const tableName = o.table_id === "0" ? "กลับบ้าน" : (window.posState.tables.find(t=>t.id === o.table_id)?.name || o.table_id);
+                const tableName = o.table_id === "0" ? "กลับบ้าน" : (window.posState.tables.find(t=>String(t.id) === String(o.table_id))?.name || o.table_id);
                 const d = new Date(o.created_at).toLocaleString('th-TH');
                 let statusBadge = o.status === 'paid' ? '<span class="text-emerald-500 font-bold">สำเร็จ</span>' : (o.status === 'pending' ? '<span class="text-orange-500 font-bold">ค้างชำระ</span>' : '<span class="text-red-500 font-bold">ยกเลิก</span>');
-                html += `
-                <tr class="border-b">
-                    <td class="p-3 pl-4 text-xs text-gray-500">${d}</td>
-                    <td class="p-3 text-center">${tableName}</td>
-                    <td class="p-3 text-right font-bold text-gray-700">฿${parseFloat(o.total).toFixed(2)}</td>
-                    <td class="p-3 text-center text-xs">${o.payment_method}</td>
-                    <td class="p-3 text-center">${statusBadge}</td>
-                </tr>`;
+                html += `<tr class="border-b"><td class="p-3 pl-4 text-xs text-gray-500">${d}</td><td class="p-3 text-center">${tableName}</td><td class="p-3 text-right font-bold text-gray-700">฿${parseFloat(o.total).toFixed(2)}</td><td class="p-3 text-center text-xs">${o.payment_method}</td><td class="p-3 text-center">${statusBadge}</td></tr>`;
             });
             const tb = document.getElementById('dash-orders-table');
             if(tb) tb.innerHTML = html || '<tr><td colspan="5" class="text-center py-4">ไม่มีข้อมูล</td></tr>';
@@ -818,19 +800,10 @@
         function renderReceipts() {
             let html = '';
             [...window.posState.orders].sort((a,b)=> new Date(b.created_at) - new Date(a.created_at)).forEach(o => {
-                const tableName = o.table_id === "0" ? "กลับบ้าน" : (window.posState.tables.find(t=>t.id === o.table_id)?.name || o.table_id);
+                const tableName = o.table_id === "0" ? "กลับบ้าน" : (window.posState.tables.find(t=>String(t.id) === String(o.table_id))?.name || o.table_id);
                 const d = new Date(o.created_at).toLocaleString('th-TH');
                 let statusBadge = o.status === 'paid' ? '<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-xs">สำเร็จ</span>' : (o.status === 'pending' ? '<span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs">ค้างชำระ</span>' : '<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs">ยกเลิกแล้ว</span>');
-                html += `
-                <tr class="border-b">
-                    <td class="p-3 text-xs text-gray-500">${d}</td>
-                    <td class="p-3">${tableName}</td>
-                    <td class="p-3 text-right font-bold text-emerald-600">฿${parseFloat(o.total).toFixed(2)}</td>
-                    <td class="p-3 text-center">${statusBadge}</td>
-                    <td class="p-3 text-center">
-                        ${o.status === 'paid' ? `<button onclick="refundOrder('${o.id}')" class="text-red-500 hover:text-red-700 text-xs font-bold p-1"><i class="fa-solid fa-ban"></i> คืนเงิน</button>` : '-'}
-                    </td>
-                </tr>`;
+                html += `<tr class="border-b"><td class="p-3 text-xs text-gray-500">${d}</td><td class="p-3">${tableName}</td><td class="p-3 text-right font-bold text-emerald-600">฿${parseFloat(o.total).toFixed(2)}</td><td class="p-3 text-center">${statusBadge}</td><td class="p-3 text-center">${o.status === 'paid' ? `<button onclick="refundOrder('${o.id}')" class="text-red-500 hover:text-red-700 text-xs font-bold p-1"><i class="fa-solid fa-ban"></i> คืนเงิน</button>` : '-'}</td></tr>`;
             });
             const tb = document.getElementById('receipts-table');
             if(tb) tb.innerHTML = html || '<tr><td colspan="5" class="text-center py-10">ยังไม่มีใบเสร็จ</td></tr>';
@@ -838,7 +811,7 @@
 
         window.refundOrder = async (id) => {
             if(!confirm('ยืนยันการยกเลิกบิลและคืนเงิน?')) return;
-            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', id), { status: 'cancelled' });
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', String(id)), { status: 'cancelled' });
             Swal.fire('สำเร็จ', 'ทำรายการคืนเงินแล้ว', 'success');
         };
 
@@ -848,113 +821,76 @@
         function renderAdminProducts() {
             let html = '';
             window.posState.products.forEach(p => {
-                html += `
-                <tr class="border-b hover:bg-gray-50">
-                    <td class="p-3 font-medium text-gray-800">${p.name}</td>
-                    <td class="p-3 text-emerald-600 font-bold">฿${parseFloat(p.price).toFixed(2)}</td>
-                    <td class="p-3 text-center">
-                        <button onclick="editProduct('${p.id}')" class="text-blue-500 mx-1"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button onclick="delProduct('${p.id}')" class="text-red-500 mx-1"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>`;
+                html += `<tr class="border-b hover:bg-gray-50"><td class="p-3 font-medium text-gray-800">${p.name}</td><td class="p-3 text-emerald-600 font-bold">฿${parseFloat(p.price).toFixed(2)}</td><td class="p-3 text-center"><button onclick="editProduct('${p.id}')" class="text-blue-500 mx-1"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="delProduct('${p.id}')" class="text-red-500 mx-1"><i class="fa-solid fa-trash"></i></button></td></tr>`;
             });
             const tb = document.getElementById('admin-products-table');
             if(tb) tb.innerHTML = html;
         }
-
         window.openProductModal = () => {
             document.getElementById('product-form').reset();
             document.getElementById('form-product-id').value = '';
             document.getElementById('product-form-title').innerText = 'เพิ่มสินค้าใหม่';
-            
-            let catHtml = '';
-            window.posState.categories.forEach(c => { catHtml += `<option value="${c.id}">${c.name}</option>`; });
+            let catHtml = ''; window.posState.categories.forEach(c => { catHtml += `<option value="${c.id}">${c.name}</option>`; });
             document.getElementById('form-product-cat').innerHTML = catHtml;
-
-            document.getElementById('modal-product-form').classList.remove('hidden');
-            document.getElementById('modal-product-form').classList.add('flex');
+            document.getElementById('modal-product-form').classList.remove('hidden'); document.getElementById('modal-product-form').classList.add('flex');
         };
-
         window.editProduct = (id) => {
-            const p = window.posState.products.find(x => x.id === id);
-            if(!p) return;
+            const p = window.posState.products.find(x => x.id === id); if(!p) return;
             window.openProductModal();
-            document.getElementById('product-form-title').innerText = 'แก้ไขสินค้า';
-            document.getElementById('form-product-id').value = p.id;
-            document.getElementById('form-product-name').value = p.name;
-            document.getElementById('form-product-cat').value = p.category_id;
-            document.getElementById('form-product-price').value = p.price;
-            document.getElementById('form-product-cost').value = p.cost;
+            document.getElementById('product-form-title').innerText = 'แก้ไขสินค้า'; document.getElementById('form-product-id').value = p.id;
+            document.getElementById('form-product-name').value = p.name; document.getElementById('form-product-cat').value = p.category_id;
+            document.getElementById('form-product-price').value = p.price; document.getElementById('form-product-cost').value = p.cost;
         };
-
         window.saveProductData = async () => {
             const id = document.getElementById('form-product-id').value;
-            const data = {
-                name: document.getElementById('form-product-name').value,
-                category_id: document.getElementById('form-product-cat').value,
-                price: parseFloat(document.getElementById('form-product-price').value),
-                cost: parseFloat(document.getElementById('form-product-cost').value),
-            };
+            const data = { name: document.getElementById('form-product-name').value, category_id: document.getElementById('form-product-cat').value, price: parseFloat(document.getElementById('form-product-price').value), cost: parseFloat(document.getElementById('form-product-cost').value) };
             try {
-                if(id) await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', id), data);
-                else await addDoc(publicPath('products'), data);
-                closeModal('modal-product-form');
-                Swal.fire('บันทึกสำเร็จ', '', 'success');
+                if(id) await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', String(id)), data); else await addDoc(publicPath('products'), data);
+                closeModal('modal-product-form'); Swal.fire('บันทึกสำเร็จ', '', 'success');
             } catch(e) { Swal.fire('Error', e.message, 'error'); }
         };
-
-        window.delProduct = async (id) => {
-            if(!confirm('ลบสินค้านี้?')) return;
-            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', id));
-        };
+        window.delProduct = async (id) => { if(!confirm('ลบสินค้านี้?')) return; await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', String(id))); };
 
         // ==========================================
         // Categories Admin
         // ==========================================
         function renderAdminCategories() {
             let html = '';
-            window.posState.categories.forEach(c => {
-                html += `
-                <tr class="border-b">
-                    <td class="p-3 font-medium text-gray-800">${c.name}</td>
-                    <td class="p-3 text-center">
-                        <button onclick="delCategory('${c.id}')" class="text-red-500"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>`;
-            });
+            window.posState.categories.forEach(c => { html += `<tr class="border-b"><td class="p-3 font-medium text-gray-800">${c.name}</td><td class="p-3 text-center"><button onclick="delCategory('${c.id}')" class="text-red-500"><i class="fa-solid fa-trash"></i></button></td></tr>`; });
             const tb = document.getElementById('admin-categories-table');
             if(tb) tb.innerHTML = html;
         }
-        window.openCategoryModal = () => {
-            document.getElementById('category-form').reset();
-            document.getElementById('modal-category-form').classList.remove('hidden');
-            document.getElementById('modal-category-form').classList.add('flex');
-        };
-        window.saveCategoryData = async () => {
-            try {
-                await addDoc(publicPath('categories'), { name: document.getElementById('form-category-name').value });
-                closeModal('modal-category-form');
-                Swal.fire('สำเร็จ', '', 'success');
-            } catch(e) { Swal.fire('Error', e.message, 'error'); }
-        };
-        window.delCategory = async (id) => {
-            if(!confirm('ลบหมวดหมู่นี้?')) return;
-            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'categories', id));
-        };
+        window.openCategoryModal = () => { document.getElementById('category-form').reset(); document.getElementById('modal-category-form').classList.remove('hidden'); document.getElementById('modal-category-form').classList.add('flex'); };
+        window.saveCategoryData = async () => { try { await addDoc(publicPath('categories'), { name: document.getElementById('form-category-name').value }); closeModal('modal-category-form'); Swal.fire('สำเร็จ', '', 'success'); } catch(e) { Swal.fire('Error', e.message, 'error'); } };
+        window.delCategory = async (id) => { if(!confirm('ลบหมวดหมู่นี้?')) return; await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'categories', String(id))); };
 
         // ==========================================
-        // Tables Admin
+        // Tables Admin (แก้ไขเพิ่ม QR Code ประจำโต๊ะ)
         // ==========================================
         function renderTablesAdmin() {
             let html = '';
+            const baseUrl = window.location.origin + window.location.pathname;
+            
             window.posState.tables.forEach(t => {
+                // สร้างลิงก์ให้ลูกค้าสแกนเข้าสั่งอาหารของโต๊ะนั้นๆ
+                const customerUrl = `${baseUrl}?view=customer&table_id=${t.id}`;
+                // ใช้ API สร้าง QR Code ฟรี
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(customerUrl)}`;
+                
                 html += `
-                <div class="border rounded-2xl p-5 flex flex-col justify-between items-center text-center shadow-sm bg-white">
+                <div class="border rounded-2xl p-5 flex flex-col justify-between items-center text-center shadow-sm bg-white hover:shadow-md transition">
                     <h3 class="font-bold text-lg text-gray-800 border-b pb-3 mb-3 w-full"><i class="fa-solid fa-chair text-gray-400 mr-1"></i> ${t.name}</h3>
+                    
+                    <img src="${qrUrl}" class="w-32 h-32 mb-3 border p-1 rounded-lg shadow-sm" alt="QR โต๊ะ ${t.name}">
+                    
                     <span class="px-3 py-1 rounded-full text-xs font-bold ${t.status === 'occupied' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-emerald-600'}">
                         ${t.status === 'occupied' ? 'มีลูกค้า' : 'ว่าง'}
                     </span>
-                    <button onclick="delTable('${t.id}')" class="mt-4 text-xs text-red-500 hover:underline">ลบโต๊ะ</button>
+                    
+                    <div class="mt-4 flex gap-2 w-full">
+                        <button onclick="window.open('${customerUrl}', '_blank')" class="flex-1 bg-cyan-50 text-cyan-600 py-1.5 rounded-lg text-xs font-bold hover:bg-cyan-100 transition"><i class="fa-solid fa-external-link"></i> จำลอง</button>
+                        <button onclick="delTable('${t.id}')" class="flex-1 bg-red-50 text-red-500 py-1.5 rounded-lg text-xs font-bold hover:bg-red-100 transition"><i class="fa-solid fa-trash"></i> ลบ</button>
+                    </div>
                 </div>`;
             });
             const grid = document.getElementById('tables-grid');
@@ -963,25 +899,19 @@
 
         window.addTable = async () => {
             const { value: tName } = await Swal.fire({ title: 'ชื่อโต๊ะใหม่', input: 'text', showCancelButton: true });
-            if(tName) {
-                await addDoc(publicPath('tables'), { name: tName, status: 'free' });
-            }
+            if(tName) { await addDoc(publicPath('tables'), { name: tName, status: 'free' }); }
         };
 
         window.delTable = async (id) => {
             if(!confirm('ลบโต๊ะนี้?')) return;
-            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tables', id));
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tables', String(id)));
         };
 
         // ==========================================
         // Settings Admin
         // ==========================================
         window.saveSettings = async () => {
-            const data = {
-                shop_name: document.getElementById('set-shop-name').value,
-                promptpay: document.getElementById('set-promptpay').value,
-                receipt_footer: document.getElementById('set-receipt-footer').value
-            };
+            const data = { shop_name: document.getElementById('set-shop-name').value, promptpay: document.getElementById('set-promptpay').value, receipt_footer: document.getElementById('set-receipt-footer').value };
             await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), data);
             Swal.fire('สำเร็จ', 'บันทึกการตั้งค่าแล้ว', 'success');
         };
@@ -990,10 +920,8 @@
         // Customer View Functions
         // ==========================================
         function renderCustomerView() {
-            if(window.posState.settings.shop_name) {
-                document.getElementById('customer-shop-name').innerText = window.posState.settings.shop_name;
-            }
-            const t = window.posState.tables.find(x => x.id === window.posState.currentTableId);
+            if(window.posState.settings.shop_name) document.getElementById('customer-shop-name').innerText = window.posState.settings.shop_name;
+            const t = window.posState.tables.find(x => String(x.id) === String(window.posState.currentTableId));
             document.getElementById('customer-table-name').innerText = t ? t.name : 'โต๊ะ ' + window.posState.currentTableId;
             renderCategories();
         }
@@ -1001,10 +929,8 @@
         function renderCustomerCart() {
             let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
             let count = window.posState.cart.reduce((s, i) => s + i.qty, 0);
-            const elTotal = document.getElementById('customer-cart-total');
-            const elCount = document.getElementById('customer-cart-count');
-            if(elTotal) elTotal.innerText = total.toFixed(2);
-            if(elCount) elCount.innerText = count;
+            if(document.getElementById('customer-cart-total')) document.getElementById('customer-cart-total').innerText = total.toFixed(2);
+            if(document.getElementById('customer-cart-count')) document.getElementById('customer-cart-count').innerText = count;
         }
 
         window.submitCustomerOrder = async () => {
@@ -1013,17 +939,14 @@
             let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
             
             const newOrder = {
-                table_id: tableId, total: total, status: 'pending', payment_method: 'unpaid',
-                created_at: new Date().toISOString(),
+                table_id: tableId, total: total, status: 'pending', payment_method: 'unpaid', created_at: new Date().toISOString(),
                 items: window.posState.cart.map(i => ({...i, status: 'pending'}))
             };
 
             try {
-                const existingOrder = window.posState.orders.find(o => o.table_id === tableId && o.status === 'pending');
+                const existingOrder = window.posState.orders.find(o => String(o.table_id) === tableId && o.status === 'pending');
                 if(existingOrder) {
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', existingOrder.id), {
-                        total: total, items: newOrder.items
-                    });
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', String(existingOrder.id)), { total: total, items: newOrder.items });
                 } else {
                     await addDoc(publicPath('orders'), newOrder);
                 }
@@ -1037,19 +960,13 @@
             } catch(e) { Swal.fire('Error', e.message, 'error'); }
         };
 
-        // Check incoming approvals for POS
         function checkPendingCustomerOrders() {
             if(window.posState.currentView !== 'pos') return;
             const pendingCount = window.posState.orders.filter(o => o.status === 'pending').length;
-            // Simple alert badge update logic can go here.
         }
 
-        // ==========================================
-        // Demo Data Installation
-        // ==========================================
         window.installDemoData = async () => {
             if(!confirm('คำเตือน: นี่จะเป็นการเพิ่มข้อมูลตัวอย่าง (โต๊ะและสินค้า) ยืนยันหรือไม่?')) return;
-            
             try {
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), { shop_name: 'CDZ POS Realtime' });
                 await addDoc(publicPath('categories'), { name: 'อาหารจานเดียว' });
