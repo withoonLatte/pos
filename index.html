@@ -715,8 +715,12 @@
                 }
 
                 if (tableId !== "0") {
-                    const tableRef = doc(db, 'artifacts', appId, 'public', 'data', 'tables', tableId);
-                    await updateDoc(tableRef, { status: method === 'pending' ? 'occupied' : 'free' });
+                    // ป้องกัน Error กรณีโต๊ะไม่มีอยู่จริงใน Firebase
+                    const tableExists = window.posState.tables.some(t => String(t.id) === tableId);
+                    if(tableExists) {
+                        const tableRef = doc(db, 'artifacts', appId, 'public', 'data', 'tables', tableId);
+                        await updateDoc(tableRef, { status: method === 'pending' ? 'occupied' : 'free' });
+                    }
                 }
 
                 Swal.fire({title: 'สำเร็จ!', text: 'บันทึกออเดอร์เรียบร้อยแล้ว', icon: 'success', timer: 1500, showConfirmButton: false});
@@ -958,8 +962,12 @@
                     await addDoc(publicPath('orders'), newOrder);
                 }
                 
-                const tableRef = doc(db, 'artifacts', appId, 'public', 'data', 'tables', tableId);
-                await updateDoc(tableRef, { status: 'occupied' });
+                // ป้องกัน Error กรณีลูกค้าเข้าลิงก์โต๊ะที่ไม่มีจริง
+                const tableExists = window.posState.tables.some(t => String(t.id) === tableId);
+                if (tableExists) {
+                    const tableRef = doc(db, 'artifacts', appId, 'public', 'data', 'tables', tableId);
+                    await updateDoc(tableRef, { status: 'occupied' });
+                }
 
                 Swal.fire('ส่งออเดอร์แล้ว!', 'พนักงานกำลังเตรียมอาหารให้คุณ', 'success');
                 window.posState.cart = [];
