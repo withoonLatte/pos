@@ -90,8 +90,8 @@
         </header>
 
         <div id="view-pos" class="view-section active p-2 md:p-4">
-            <div class="flex flex-col lg:flex-row h-full gap-4 overflow-hidden">
-                <div class="flex-1 flex flex-col bg-white rounded-xl shadow-sm border h-full overflow-hidden shrink-0 relative">
+            <div class="flex flex-col lg:flex-row h-full gap-4 overflow-y-auto lg:overflow-hidden pb-10 lg:pb-0">
+                <div class="flex-1 flex flex-col bg-white rounded-xl shadow-sm border min-h-[60vh] lg:min-h-0 lg:h-full overflow-hidden shrink-0 relative">
                     <div class="p-3 border-b bg-gray-50 flex gap-2 shrink-0">
                         <select id="pos-table" onchange="loadTableOrder()" class="flex-1 p-2 border rounded-lg focus:ring-emerald-500 outline-none text-sm font-bold text-gray-700 bg-white shadow-sm">
                             <option value="0">สั่งกลับบ้าน (Takeaway)</option>
@@ -101,7 +101,7 @@
                     <div class="p-3 overflow-y-auto flex-1 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 content-start" id="pos-product-grid"></div>
                 </div>
 
-                <div class="w-full lg:w-[350px] bg-white rounded-xl shadow-sm border flex flex-col h-full shrink-0">
+                <div class="w-full lg:w-[350px] bg-white rounded-xl shadow-sm border flex flex-col min-h-[50vh] lg:min-h-0 lg:h-full shrink-0">
                     <div class="p-4 border-b bg-[#f8fafc] flex justify-between items-center shrink-0">
                         <h2 class="font-bold text-gray-700"><i class="fa-solid fa-cart-shopping text-cyan-500 mr-2"></i>ออเดอร์ปัจจุบัน</h2>
                         <button onclick="clearCart()" class="text-sm text-red-500 hover:text-red-700 font-medium"><i class="fa-solid fa-trash mr-1"></i>ล้าง</button>
@@ -524,7 +524,7 @@
         const publicPath = (colName) => collection(db, 'artifacts', appId, 'public', 'data', colName);
         
         window.posState = {
-            products: [], categories: [], tables: [], orders: [], settings: { shop_name: 'CDZ POS' },
+            products: [], categories: [], tables: [], orders: [], members: [], settings: { shop_name: 'CDZ POS' },
             cart: [], currentTableId: "0", currentView: 'pos'
         };
 
@@ -549,7 +549,6 @@
             if (user) setupRealtimeListeners();
         });
 
-        // ฟังก์ชันช่วยจัดการ LocalStorage สำหรับ Customer Display
         function syncCartToLocal() {
             localStorage.setItem('pos_current_cart', JSON.stringify(window.posState.cart));
             if(window.posState.currentView === 'customer_display') window.updateCustomerDisplay();
@@ -610,7 +609,6 @@
                     
                     document.getElementById('set-shop-logo').value = window.posState.settings.shop_logo || '';
                     
-                    // Logo Previews
                     const logoPreview = document.getElementById('logo_preview');
                     const logoCont = document.getElementById('logo_preview_container');
                     if(window.posState.settings.shop_logo) {
@@ -658,7 +656,6 @@
             const navBtn = document.getElementById(`nav-${viewId}`);
             if(navBtn) navBtn.classList.add('sidebar-active');
             
-            // Manage main layout visibility
             if (viewId === 'customer' || viewId === 'customer_display') {
                 document.getElementById('main-sidebar').classList.add('hidden');
                 document.getElementById('main-header').classList.add('hidden');
@@ -861,7 +858,6 @@
             const ppSec = document.getElementById('pp-section');
             ppSec.classList.remove('hidden'); ppSec.classList.add('flex');
             
-            // สั่งให้จอฝั่งลูกค้าแสดง QR Code
             localStorage.setItem('pos_show_qr', JSON.stringify({ url: qrUrl, total: total.toFixed(2) }));
             if(window.posState.currentView === 'customer_display') window.updateCustomerDisplay();
         };
@@ -1174,7 +1170,6 @@
             await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tables', String(id)));
         };
 
-        // --- เริ่มต้นส่วนจัดการ Settings (Logo, Staff) ---
         window.handleLogoUpload = (e) => {
             const file = e.target.files[0]; if (!file) return;
             const reader = new FileReader();
@@ -1251,7 +1246,6 @@
             if(!confirm('ลบพนักงานคนนี้?')) return;
             await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'members', String(id)));
         };
-        // --- สิ้นสุดส่วนจัดการ Settings (Logo, Staff) ---
 
         function renderCustomerView() {
             if(window.posState.settings.shop_name) document.getElementById('customer-shop-name').innerText = window.posState.settings.shop_name;
@@ -1311,7 +1305,6 @@
             } catch(e) { Swal.fire('Error', e.message, 'error'); }
         };
 
-        // ระบบของ Customer Display (เชื่อมต่อผ่าน localStorage)
         window.updateCustomerDisplay = () => {
             let currentCart = JSON.parse(localStorage.getItem('pos_current_cart') || '[]');
             let container = document.getElementById('cd-cart-items-container');
@@ -1346,7 +1339,6 @@
             }
         };
 
-        // ตรวจจับการเปลี่ยนแปลงของตะกร้าและ QR เพื่อดึงมาโชว์หน้าจอฝั่งลูกค้า
         window.addEventListener('storage', function(e) {
             if(e.key === 'pos_current_cart' || e.key === 'pos_show_qr') {
                 if(window.posState.currentView === 'customer_display') {
