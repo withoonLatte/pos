@@ -32,7 +32,6 @@
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* ซ่อน UI ทั้งหมดตอน Print ยกเว้น #print-area */
         .print-only { display: none; }
         @media print {
             body > *:not(#print-area) { display: none !important; }
@@ -60,7 +59,7 @@
     <aside id="main-sidebar" class="hidden md:flex flex-col z-50 h-full border-r shadow-sm sidebar-bg sidebar-transition w-64 shrink-0">
         <div class="h-14 flex items-center justify-between px-4 border-b border-gray-700 font-bold text-white shrink-0">
             <div class="flex items-center sidebar-text text-lg overflow-hidden whitespace-nowrap">
-                <i class="fi fi-br-qrcode-menu mr-2 text-emerald-400"></i> CDZ POS
+                <img src="qrcode-menu.png" class="w-6 h-6 object-contain inline-block mr-2 invert" onerror="this.outerHTML='<i class=\'fi fi-br-qrcode-menu mr-2 text-emerald-400\'></i>'"> CDZ POS
             </div>
             <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white focus:outline-none p-1 mx-auto"><i class="fa-solid fa-bars fa-lg"></i></button>
         </div>
@@ -74,13 +73,13 @@
             <a href="#" onclick="switchView('settings')" id="nav-settings" class="sidebar-item px-6 py-3 flex items-center"><i class="fa-solid fa-gear w-6 text-center"></i> <span class="sidebar-text ml-2 whitespace-nowrap">ตั้งค่าระบบ</span></a>
             
             <div class="mt-auto px-6 py-4 border-t border-gray-700 flex flex-col gap-3">
-                <a href="#" onclick="window.open('?view=customer&table_id=1', '_blank')" class="text-sm text-emerald-400 font-medium hover:text-emerald-300 flex items-center"><i class="fa-solid fa-mobile-screen w-6 text-center"></i> <span class="sidebar-text ml-2 whitespace-nowrap">จำลองจอลูกค้า</span></a>
+                <a href="?view=customer_display" target="_blank" class="text-sm text-emerald-400 font-medium hover:text-emerald-300 flex items-center"><i class="fa-solid fa-desktop w-6 text-center"></i> <span class="sidebar-text ml-2 whitespace-nowrap">จอฝั่งลูกค้า</span></a>
+                <a href="?view=customer&table_id=1" target="_blank" class="text-sm text-cyan-400 font-medium hover:text-cyan-300 flex items-center"><i class="fa-solid fa-mobile-screen w-6 text-center"></i> <span class="sidebar-text ml-2 whitespace-nowrap">จำลองจอลูกค้า</span></a>
             </div>
         </nav>
     </aside>
 
     <main id="main-content" class="flex-1 flex flex-col h-screen overflow-hidden bg-gray-100 relative hidden">
-        
         <header id="main-header" class="h-14 bg-white text-gray-800 border-b flex items-center justify-between px-4 shadow-sm z-10 shrink-0">
             <div class="flex items-center">
                 <button onclick="toggleMobileMenu()" class="md:hidden mr-4 text-gray-600"><i class="fa-solid fa-bars fa-lg"></i></button>
@@ -97,12 +96,10 @@
                     <div class="p-3 border-b bg-gray-50 flex gap-2 shrink-0">
                         <select id="pos-table" onchange="loadTableOrder()" class="flex-1 p-2 border rounded-lg focus:ring-emerald-500 outline-none text-sm font-bold text-gray-700 bg-white shadow-sm">
                             <option value="0">สั่งกลับบ้าน (Takeaway)</option>
-                            </select>
+                        </select>
                     </div>
-                    <div class="p-3 bg-white border-b flex flex-wrap gap-2 shrink-0 items-center" id="pos-category-filters">
-                        </div>
-                    <div class="p-3 overflow-y-auto flex-1 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 content-start" id="pos-product-grid">
-                        </div>
+                    <div class="p-3 bg-white border-b flex flex-wrap gap-2 shrink-0 items-center" id="pos-category-filters"></div>
+                    <div class="p-3 overflow-y-auto flex-1 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 content-start" id="pos-product-grid"></div>
                 </div>
 
                 <div class="w-full lg:w-[350px] bg-white rounded-xl shadow-sm border flex flex-col h-full shrink-0">
@@ -110,8 +107,7 @@
                         <h2 class="font-bold text-gray-700"><i class="fa-solid fa-cart-shopping text-cyan-500 mr-2"></i>ออเดอร์ปัจจุบัน</h2>
                         <button onclick="clearCart()" class="text-sm text-red-500 hover:text-red-700 font-medium"><i class="fa-solid fa-trash mr-1"></i>ล้าง</button>
                     </div>
-                    <div id="pos-cart-items" class="flex-1 overflow-y-auto p-3 space-y-2">
-                        </div>
+                    <div id="pos-cart-items" class="flex-1 overflow-y-auto p-3 space-y-2"></div>
                     <div class="p-4 border-t bg-gray-50 shrink-0">
                         <div class="flex justify-between mb-4 text-2xl font-bold text-gray-800">
                             <span>ยอดชำระ</span>
@@ -130,8 +126,7 @@
                 <div class="flex justify-between items-center mb-6 shrink-0">
                     <h2 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-fire-burner text-orange-500 mr-2"></i> ออเดอร์ในครัว (รอทำ)</h2>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto pb-6 content-start flex-1" id="kitchen-grid">
-                    </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto pb-6 content-start flex-1" id="kitchen-grid"></div>
             </div>
         </div>
 
@@ -173,8 +168,7 @@
                                 <th class="p-3 text-center">สถานะ</th>
                             </tr>
                         </thead>
-                        <tbody id="dash-orders-table">
-                            </tbody>
+                        <tbody id="dash-orders-table"></tbody>
                     </table>
                 </div>
             </div>
@@ -251,8 +245,7 @@
                     <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-qrcode mr-2 text-cyan-600"></i> จัดการโต๊ะ & QR Code</h2>
                     <button onclick="addTable()" class="bg-gradient text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:shadow-md transition"><i class="fa-solid fa-plus mr-1"></i> เพิ่มโต๊ะใหม่</button>
                 </div>
-                <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 overflow-y-auto" id="tables-grid">
-                    </div>
+                <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 overflow-y-auto" id="tables-grid"></div>
             </div>
         </div>
 
@@ -276,10 +269,10 @@
                 </form>
             </div>
         </div>
-
     </main>
 
-    <div id="view-customer" class="view-section h-screen w-screen bg-gray-100 hidden relative overflow-hidden flex-col">
+    <!-- View: Customer (Mobile Ordering) -->
+    <div id="view-customer" class="view-section h-screen w-screen bg-gray-100 hidden relative overflow-hidden flex-col z-[100] fixed inset-0">
         <div class="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white p-5 shadow-md shrink-0 rounded-b-2xl">
             <h1 class="text-2xl font-bold text-center mb-1 drop-shadow-sm" id="customer-shop-name">CDZ POS</h1>
             <p class="text-center text-sm opacity-95 bg-black/15 inline-block px-3 py-1 rounded-full mx-auto table shadow-inner"><i class="fa-solid fa-location-dot mr-1"></i> โต๊ะที่นั่ง: <span id="customer-table-name">-</span></p>
@@ -299,7 +292,56 @@
         </div>
     </div>
 
-    <div id="modal-checkout" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[100] backdrop-blur-sm p-4">
+    <!-- View: Customer Display -->
+    <div id="view-customer_display" class="view-section h-screen w-screen bg-gray-100 hidden relative overflow-hidden flex-col z-[100] fixed inset-0">
+        <div class="flex flex-col h-full bg-white shadow-xl overflow-hidden border">
+            <div class="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white p-6 text-center shadow-sm z-10 shrink-0">
+                <h1 class="text-3xl md:text-4xl font-bold tracking-wide drop-shadow-md">รายการอาหาร (Your Order)</h1>
+            </div>
+            
+            <div class="flex flex-1 bg-gray-100 overflow-hidden relative">
+                <div class="w-1/2 flex flex-col items-center justify-center p-6 relative z-10 shadow-[5px_0_20px_rgba(0,0,0,0.08)] bg-cover bg-center border-r border-gray-200">
+                    <div id="cd-logo-state" class="flex flex-col items-center justify-center text-gray-800 text-center w-full h-full my-auto">
+                        <img src="qrcode-menu.png" class="max-w-[200px] max-h-[200px] object-contain animate-zoom drop-shadow-2xl mb-6 p-4 rounded-3xl" alt="Shop Logo" onerror="this.outerHTML='<i class=\'fa-solid fa-store text-6xl text-emerald-500 animate-zoom mb-6\'></i>'">
+                        <h2 id="cd-shop-name-display" class="text-3xl md:text-4xl font-bold tracking-wider drop-shadow-md text-emerald-600">CDZ POS</h2>
+                        <p class="text-lg text-gray-500 mt-3 font-medium">กำลังรอรับออเดอร์...</p>
+                    </div>
+                    
+                    <div id="cd-qr-state" class="hidden flex-col items-center justify-center text-gray-800 w-full h-full">
+                        <div class="flex flex-col items-center my-auto">
+                            <h2 class="text-3xl md:text-4xl font-bold mb-2 drop-shadow-md text-center text-cyan-600">สแกนเพื่อชำระเงิน</h2>
+                            <p class="text-lg md:text-xl text-gray-500 mb-6 font-medium tracking-wide">PromptPay / Mobile Banking</p>
+                            
+                            <div class="bg-white p-5 rounded-3xl shadow-2xl mb-6 transform hover:scale-105 transition duration-300 border-2 border-dashed border-cyan-300">
+                                <img id="cd-qr-image" src="" class="w-52 h-52 md:w-64 md:h-64 object-contain mx-auto mix-blend-multiply" alt="QR Code">
+                            </div>
+                            
+                            <p class="text-4xl md:text-5xl font-extrabold text-emerald-600 drop-shadow-md bg-emerald-50 px-6 py-2 rounded-full border border-emerald-100">฿<span id="cd-qr-total">0.00</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-1/2 flex flex-col h-full bg-white z-20 relative">
+                    <div class="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50/50" id="cd-main-area">
+                        <div id="cd-cart-items-container" class="space-y-2"></div>
+                    </div>
+                    
+                    <div class="bg-white border-t border-gray-100 p-4 md:p-6 shadow-[0_-10px_20px_rgba(0,0,0,0.02)] shrink-0">
+                        <div class="flex justify-between items-center bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                            <div>
+                                <span class="block text-xl font-bold text-gray-600">ยอดรวม</span>
+                                <span class="block text-xs font-medium text-gray-400">Total Amount</span>
+                            </div>
+                            <span class="text-4xl md:text-5xl font-extrabold text-emerald-600 drop-shadow-sm">฿<span id="cd-total">0.00</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-checkout" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[110] backdrop-blur-sm p-4">
         <div class="bg-white rounded-2xl w-full max-w-[400px] p-0 shadow-2xl relative overflow-hidden flex flex-col">
             <div class="bg-gradient text-white p-4 flex justify-between items-center shrink-0">
                 <h3 class="text-lg font-bold">ยืนยันการรับชำระเงิน</h3>
@@ -308,6 +350,17 @@
             <div class="p-6 text-center overflow-y-auto bg-white relative">
                 <p class="text-gray-500 mb-1">ยอดที่ต้องชำระสุทธิ</p>
                 <p class="text-5xl font-extrabold text-emerald-600 mb-6 drop-shadow-sm">฿<span id="modal-checkout-total">0.00</span></p>
+
+                <!-- Checkbox พิมพ์ใบเสร็จ -->
+                <label class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-xl mb-6 cursor-pointer hover:border-cyan-400 transition shadow-sm">
+                    <span class="font-bold text-gray-700"><i class="fa-solid fa-print mr-2 text-gray-400"></i>พิมพ์ใบเสร็จ</span>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="toggle-print-receipt" class="hidden" onchange="togglePrintCheckbox(this)">
+                        <div class="w-12 h-7 bg-gray-300 rounded-full relative transition-colors duration-200 toggle-bg">
+                            <div class="w-5 h-5 bg-white rounded-full absolute top-[4px] left-[4px] transition-transform duration-200 toggle-dot shadow-md"></div>
+                        </div>
+                    </div>
+                </label>
 
                 <div id="checkout-buttons" class="space-y-3">
                     <button onclick="generatePromptPayQR()" class="w-full border-2 border-cyan-500 text-cyan-600 hover:bg-cyan-50 font-bold py-4 rounded-xl text-lg transition flex justify-center items-center">
@@ -354,12 +407,11 @@
                         </button>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <div id="modal-product-form" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[100] backdrop-blur-sm p-4">
+    <div id="modal-product-form" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[110] backdrop-blur-sm p-4">
         <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl relative overflow-hidden flex flex-col">
             <div class="bg-emerald-500 text-white p-4 flex justify-between items-center">
                 <h3 class="text-lg font-bold" id="product-form-title">เพิ่ม/แก้ไขสินค้า</h3>
@@ -378,7 +430,7 @@
         </div>
     </div>
 
-    <div id="modal-category-form" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[100] backdrop-blur-sm p-4">
+    <div id="modal-category-form" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[110] backdrop-blur-sm p-4">
         <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl relative overflow-hidden flex flex-col">
             <div class="bg-cyan-500 text-white p-4 flex justify-between items-center">
                 <h3 class="text-lg font-bold">จัดการหมวดหมู่</h3>
@@ -397,7 +449,6 @@
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // คอนฟิก Firebase สำหรับโปรเจกต์ CDZ-POS
         const firebaseConfig = {
             apiKey: "AIzaSyAhdAsDQm78kBfHVTZWf5Kkf_LTW3pJxNA",
             authDomain: "cdz-pos-8a237.firebaseapp.com",
@@ -434,20 +485,33 @@
             if (user) setupRealtimeListeners();
         });
 
+        // ฟังก์ชันช่วยจัดการ LocalStorage สำหรับ Customer Display
+        function syncCartToLocal() {
+            localStorage.setItem('pos_current_cart', JSON.stringify(window.posState.cart));
+            if(window.posState.currentView === 'customer_display') window.updateCustomerDisplay();
+        }
+
         window.onload = () => {
             initAuth();
             const urlParams = new URLSearchParams(window.location.search);
             const viewParam = urlParams.get('view');
+            
             if (viewParam === 'customer') {
                 window.posState.currentTableId = urlParams.get('table_id') || "1";
                 document.getElementById('main-sidebar').classList.add('hidden');
                 document.getElementById('main-header').classList.add('hidden');
+                document.getElementById('main-content').classList.add('hidden');
                 showView('customer');
+            } else if (viewParam === 'customer_display') {
+                document.getElementById('main-sidebar').classList.add('hidden');
+                document.getElementById('main-header').classList.add('hidden');
+                document.getElementById('main-content').classList.add('hidden');
+                showView('customer_display');
             } else {
                 document.getElementById('main-sidebar').classList.remove('hidden');
                 document.getElementById('main-header').classList.remove('hidden');
                 document.getElementById('main-content').classList.remove('hidden');
-                showView('pos');
+                showView(viewParam || 'pos');
             }
         };
 
@@ -458,19 +522,19 @@
             unsubscribeListeners.push(onSnapshot(publicPath('categories'), (snap) => {
                 window.posState.categories = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderCategories();
-            }, e => console.error("Firebase error categories:", e)));
+            }, e => console.error("Firebase error:", e)));
 
             unsubscribeListeners.push(onSnapshot(publicPath('products'), (snap) => {
                 window.posState.products = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderProducts();
                 renderAdminProducts();
-            }, e => console.error("Firebase error products:", e)));
+            }, e => console.error("Firebase error:", e)));
 
             unsubscribeListeners.push(onSnapshot(publicPath('tables'), (snap) => {
                 window.posState.tables = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderTables();
                 if(window.posState.currentView === 'tables') renderTablesAdmin();
-            }, e => console.error("Firebase error tables:", e)));
+            }, e => console.error("Firebase error:", e)));
 
             unsubscribeListeners.push(onSnapshot(publicPath('orders'), (snap) => {
                 window.posState.orders = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -478,7 +542,7 @@
                 renderAdminDashboard();
                 renderReceipts();
                 document.getElementById('loading-screen').style.display = 'none';
-            }, e => console.error("Firebase error orders:", e)));
+            }, e => console.error("Firebase error:", e)));
 
             unsubscribeListeners.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), (docSnap) => {
                 if (docSnap.exists()) {
@@ -488,8 +552,9 @@
                     document.getElementById('set-promptpay').value = window.posState.settings.promptpay || '';
                     document.getElementById('set-receipt-footer').value = window.posState.settings.receipt_footer || '';
                     if(document.getElementById('customer-shop-name')) document.getElementById('customer-shop-name').innerText = window.posState.settings.shop_name || 'CDZ POS';
+                    if(document.getElementById('cd-shop-name-display')) document.getElementById('cd-shop-name-display').innerText = window.posState.settings.shop_name || 'CDZ POS';
                 }
-            }, e => console.error("Firebase error settings:", e)));
+            }, e => console.error("Firebase error:", e)));
         }
 
         window.switchView = (viewId) => { showView(viewId); toggleMobileMenu(true); };
@@ -500,7 +565,12 @@
             document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('sidebar-active'));
             
             const targetView = document.getElementById(`view-${viewId}`);
-            if(targetView) { targetView.classList.add('active'); if(viewId !== 'customer') targetView.classList.add('flex'); }
+            if(targetView) { 
+                targetView.classList.add('active'); 
+                if(viewId !== 'customer' && viewId !== 'customer_display') {
+                    targetView.classList.add('flex'); 
+                }
+            }
             
             const navBtn = document.getElementById(`nav-${viewId}`);
             if(navBtn) navBtn.classList.add('sidebar-active');
@@ -512,6 +582,7 @@
             if(viewId === 'receipts') renderReceipts();
             if(viewId === 'tables') renderTablesAdmin();
             if(viewId === 'customer') { renderCustomerView(); renderCustomerCart(); }
+            if(viewId === 'customer_display') window.updateCustomerDisplay();
         }
 
         window.toggleSidebar = () => { document.getElementById('main-sidebar').classList.toggle('sidebar-collapsed'); };
@@ -572,21 +643,30 @@
             const pendingOrder = window.posState.orders.find(o => String(o.table_id) === tableId && o.status === 'pending');
             window.posState.cart = pendingOrder ? [...pendingOrder.items] : [];
             renderCart();
+            syncCartToLocal();
         };
 
         window.addToCart = (id, name, price) => {
             let item = window.posState.cart.find(i => i.id === id);
             if (item) item.qty += 1; else window.posState.cart.push({ id, name, price: parseFloat(price), qty: 1 });
             if(window.posState.currentView === 'customer') renderCustomerCart(); else renderCart();
+            syncCartToLocal();
         };
 
         window.updateQty = (index, change) => {
             window.posState.cart[index].qty += change;
             if (window.posState.cart[index].qty <= 0) window.posState.cart.splice(index, 1);
             if(window.posState.currentView === 'customer') renderCustomerCart(); else renderCart();
+            syncCartToLocal();
         };
 
-        window.clearCart = () => { window.posState.cart = []; renderCart(); renderCustomerCart(); };
+        window.clearCart = () => { 
+            window.posState.cart = []; 
+            renderCart(); 
+            renderCustomerCart(); 
+            syncCartToLocal();
+            localStorage.removeItem('pos_show_qr');
+        };
 
         function renderCart() {
             const cont = document.getElementById('pos-cart-items');
@@ -615,9 +695,13 @@
             document.getElementById('pos-cart-total').innerText = total.toFixed(2);
         }
 
-        // ==========================================
-        // Checkout & UI Modals
-        // ==========================================
+        window.togglePrintCheckbox = (checkbox) => {
+            const bg = checkbox.nextElementSibling;
+            const dot = bg.querySelector('.toggle-dot');
+            if(checkbox.checked) { bg.classList.remove('bg-gray-300'); bg.classList.add('bg-cyan-500'); dot.classList.add('translate-x-5'); } 
+            else { bg.classList.add('bg-gray-300'); bg.classList.remove('bg-cyan-500'); dot.classList.remove('translate-x-5'); }
+        };
+
         window.openCheckoutModal = () => {
             if (window.posState.cart.length === 0) return Swal.fire('ตะกร้าว่าง', 'กรุณาเลือกสินค้าก่อน', 'warning');
             let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
@@ -631,9 +715,12 @@
             document.getElementById('modal-checkout').classList.add('flex');
         };
 
-        window.closeModal = (id) => { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); };
+        window.closeModal = (id) => { 
+            if(id === 'modal-checkout') localStorage.removeItem('pos_show_qr');
+            document.getElementById(id).classList.add('hidden'); 
+            document.getElementById(id).classList.remove('flex'); 
+        };
 
-        // Cash Calculator
         window.showCashSection = () => {
             document.getElementById('checkout-buttons').classList.add('hidden');
             const cashSec = document.getElementById('cash-section');
@@ -668,7 +755,6 @@
             }
         };
 
-        // PromptPay QR
         window.generatePromptPayQR = () => {
             const ppNo = window.posState.settings.promptpay || '';
             if(!ppNo) return Swal.fire('ผิดพลาด', 'ยังไม่ได้ตั้งค่าเบอร์พร้อมเพย์', 'error');
@@ -678,15 +764,21 @@
             document.getElementById('checkout-buttons').classList.add('hidden');
             const ppSec = document.getElementById('pp-section');
             ppSec.classList.remove('hidden'); ppSec.classList.add('flex');
+            
+            // สั่งให้จอฝั่งลูกค้าแสดง QR Code
+            localStorage.setItem('pos_show_qr', JSON.stringify({ url: qrUrl, total: total.toFixed(2) }));
+            if(window.posState.currentView === 'customer_display') window.updateCustomerDisplay();
         };
+        
         window.hidePPSection = () => {
             document.getElementById('pp-section').classList.add('hidden'); document.getElementById('pp-section').classList.remove('flex');
             document.getElementById('checkout-buttons').classList.remove('hidden');
+            localStorage.removeItem('pos_show_qr');
+            if(window.posState.currentView === 'customer_display') window.updateCustomerDisplay();
         };
 
-        // Process Checkout Core Logic
         window.processCheckout = async (method) => {
-            const tableId = String(window.posState.currentTableId); // Fix: Force to String to prevent Firebase crash
+            const tableId = String(window.posState.currentTableId);
             let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
             
             const newOrder = {
@@ -701,7 +793,6 @@
             try {
                 const existingOrder = window.posState.orders.find(o => String(o.table_id) === tableId && o.status === 'pending');
                 
-                // Fix: Firebase doc() requires string IDs
                 if (existingOrder && method !== 'pending') {
                     await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', String(existingOrder.id)), {
                         status: 'paid', payment_method: method, total: total, items: newOrder.items
@@ -715,7 +806,6 @@
                 }
 
                 if (tableId !== "0") {
-                    // ป้องกัน Error กรณีโต๊ะไม่มีอยู่จริงใน Firebase
                     const tableExists = window.posState.tables.some(t => String(t.id) === tableId);
                     if(tableExists) {
                         const tableRef = doc(db, 'artifacts', appId, 'public', 'data', 'tables', tableId);
@@ -727,6 +817,7 @@
                 closeModal('modal-checkout');
                 window.posState.cart = [];
                 renderCart();
+                syncCartToLocal();
                 document.getElementById('pos-table').value = "0";
                 window.posState.currentTableId = "0";
             } catch (e) {
@@ -735,9 +826,6 @@
             }
         };
 
-        // ==========================================
-        // Kitchen View
-        // ==========================================
         function renderKitchen() {
             const grid = document.getElementById('kitchen-grid');
             if(!grid) return;
@@ -777,9 +865,6 @@
             await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', String(orderId)), { items: newItems });
         };
 
-        // ==========================================
-        // Admin Dashboard
-        // ==========================================
         function renderAdminDashboard() {
             let rev = 0, ordCount = 0, ref = 0;
             window.posState.orders.forEach(o => {
@@ -805,9 +890,6 @@
             if(tb) tb.innerHTML = html || '<tr><td colspan="5" class="text-center py-4">ไม่มีข้อมูล</td></tr>';
         }
 
-        // ==========================================
-        // Receipts View
-        // ==========================================
         function renderReceipts() {
             let html = '';
             [...window.posState.orders].sort((a,b)=> new Date(b.created_at) - new Date(a.created_at)).forEach(o => {
@@ -826,9 +908,6 @@
             Swal.fire('สำเร็จ', 'ทำรายการคืนเงินแล้ว', 'success');
         };
 
-        // ==========================================
-        // Products Admin
-        // ==========================================
         function renderAdminProducts() {
             let html = '';
             window.posState.products.forEach(p => {
@@ -862,9 +941,6 @@
         };
         window.delProduct = async (id) => { if(!confirm('ลบสินค้านี้?')) return; await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', String(id))); };
 
-        // ==========================================
-        // Categories Admin
-        // ==========================================
         function renderAdminCategories() {
             let html = '';
             window.posState.categories.forEach(c => { html += `<tr class="border-b"><td class="p-3 font-medium text-gray-800">${c.name}</td><td class="p-3 text-center"><button onclick="delCategory('${c.id}')" class="text-red-500"><i class="fa-solid fa-trash"></i></button></td></tr>`; });
@@ -875,29 +951,21 @@
         window.saveCategoryData = async () => { try { await addDoc(publicPath('categories'), { name: document.getElementById('form-category-name').value }); closeModal('modal-category-form'); Swal.fire('สำเร็จ', '', 'success'); } catch(e) { Swal.fire('Error', e.message, 'error'); } };
         window.delCategory = async (id) => { if(!confirm('ลบหมวดหมู่นี้?')) return; await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'categories', String(id))); };
 
-        // ==========================================
-        // Tables Admin (แก้ไขเพิ่ม QR Code ประจำโต๊ะ)
-        // ==========================================
         function renderTablesAdmin() {
             let html = '';
             const baseUrl = window.location.origin + window.location.pathname;
             
             window.posState.tables.forEach(t => {
-                // สร้างลิงก์ให้ลูกค้าสแกนเข้าสั่งอาหารของโต๊ะนั้นๆ
                 const customerUrl = `${baseUrl}?view=customer&table_id=${t.id}`;
-                // ใช้ API สร้าง QR Code ฟรี
                 const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(customerUrl)}`;
                 
                 html += `
                 <div class="border rounded-2xl p-5 flex flex-col justify-between items-center text-center shadow-sm bg-white hover:shadow-md transition">
                     <h3 class="font-bold text-lg text-gray-800 border-b pb-3 mb-3 w-full"><i class="fa-solid fa-chair text-gray-400 mr-1"></i> ${t.name}</h3>
-                    
                     <img src="${qrUrl}" class="w-32 h-32 mb-3 border p-1 rounded-lg shadow-sm" alt="QR โต๊ะ ${t.name}">
-                    
                     <span class="px-3 py-1 rounded-full text-xs font-bold ${t.status === 'occupied' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-emerald-600'}">
                         ${t.status === 'occupied' ? 'มีลูกค้า' : 'ว่าง'}
                     </span>
-                    
                     <div class="mt-4 flex gap-2 w-full">
                         <button onclick="window.open('${customerUrl}', '_blank')" class="flex-1 bg-cyan-50 text-cyan-600 py-1.5 rounded-lg text-xs font-bold hover:bg-cyan-100 transition"><i class="fa-solid fa-external-link"></i> จำลอง</button>
                         <button onclick="delTable('${t.id}')" class="flex-1 bg-red-50 text-red-500 py-1.5 rounded-lg text-xs font-bold hover:bg-red-100 transition"><i class="fa-solid fa-trash"></i> ลบ</button>
@@ -918,18 +986,12 @@
             await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tables', String(id)));
         };
 
-        // ==========================================
-        // Settings Admin
-        // ==========================================
         window.saveSettings = async () => {
             const data = { shop_name: document.getElementById('set-shop-name').value, promptpay: document.getElementById('set-promptpay').value, receipt_footer: document.getElementById('set-receipt-footer').value };
             await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), data);
             Swal.fire('สำเร็จ', 'บันทึกการตั้งค่าแล้ว', 'success');
         };
 
-        // ==========================================
-        // Customer View Functions
-        // ==========================================
         function renderCustomerView() {
             if(window.posState.settings.shop_name) document.getElementById('customer-shop-name').innerText = window.posState.settings.shop_name;
             const t = window.posState.tables.find(x => String(x.id) === String(window.posState.currentTableId));
@@ -962,7 +1024,6 @@
                     await addDoc(publicPath('orders'), newOrder);
                 }
                 
-                // ป้องกัน Error กรณีลูกค้าเข้าลิงก์โต๊ะที่ไม่มีจริง
                 const tableExists = window.posState.tables.some(t => String(t.id) === tableId);
                 if (tableExists) {
                     const tableRef = doc(db, 'artifacts', appId, 'public', 'data', 'tables', tableId);
@@ -972,13 +1033,9 @@
                 Swal.fire('ส่งออเดอร์แล้ว!', 'พนักงานกำลังเตรียมอาหารให้คุณ', 'success');
                 window.posState.cart = [];
                 renderCustomerCart();
+                syncCartToLocal();
             } catch(e) { Swal.fire('Error', e.message, 'error'); }
         };
-
-        function checkPendingCustomerOrders() {
-            if(window.posState.currentView !== 'pos') return;
-            const pendingCount = window.posState.orders.filter(o => o.status === 'pending').length;
-        }
 
         window.installDemoData = async () => {
             if(!confirm('คำเตือน: นี่จะเป็นการเพิ่มข้อมูลตัวอย่าง (โต๊ะและสินค้า) ยืนยันหรือไม่?')) return;
@@ -992,6 +1049,50 @@
                 Swal.fire('ลงข้อมูลสำเร็จ', 'รีเฟรชหน้าเว็บเพื่อดูผลลัพธ์', 'success').then(()=>location.reload());
             } catch(e) { Swal.fire('Error', e.message, 'error'); }
         };
+
+        // ระบบของ Customer Display (เชื่อมต่อผ่าน localStorage)
+        window.updateCustomerDisplay = () => {
+            let currentCart = JSON.parse(localStorage.getItem('pos_current_cart') || '[]');
+            let container = document.getElementById('cd-cart-items-container');
+            let totalEl = document.getElementById('cd-total');
+            if(!container) return;
+            
+            container.innerHTML = '';
+            let total = 0;
+            if (currentCart.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-300 flex flex-col items-center justify-center h-full mt-32"><i class="fa-solid fa-cart-shopping mb-4 text-5xl opacity-30"></i><p class="text-xl font-medium text-gray-400">ยังไม่มีรายการอาหาร</p></div>';
+            } else {
+                currentCart.forEach(item => {
+                    let itemTotal = item.price * item.qty;
+                    total += itemTotal;
+                    container.innerHTML += `<div class="flex justify-between items-center bg-white p-3.5 rounded-xl shadow-sm border border-gray-100 text-lg mb-2"><div class="flex-1 font-bold text-gray-800 pr-2">${item.name}</div><div class="w-16 text-center text-gray-500 font-medium bg-gray-50 py-1 rounded-lg mx-2 text-sm">x ${item.qty}</div><div class="w-28 text-right font-extrabold text-emerald-600">฿${itemTotal.toFixed(2)}</div></div>`;
+                });
+            }
+            if(totalEl) totalEl.innerText = total.toFixed(2);
+
+            let qrData = JSON.parse(localStorage.getItem('pos_show_qr'));
+            let logoState = document.getElementById('cd-logo-state');
+            let qrState = document.getElementById('cd-qr-state');
+            
+            if(qrData && qrData.url && qrState && logoState) {
+                document.getElementById('cd-qr-image').src = qrData.url;
+                document.getElementById('cd-qr-total').innerText = qrData.total;
+                logoState.classList.add('hidden'); logoState.classList.remove('flex');
+                qrState.classList.remove('hidden'); qrState.classList.add('flex');
+            } else if (qrState && logoState) {
+                logoState.classList.remove('hidden'); logoState.classList.add('flex');
+                qrState.classList.add('hidden'); qrState.classList.remove('flex');
+            }
+        };
+
+        // ตรวจจับการเปลี่ยนแปลงของตะกร้าและ QR เพื่อดึงมาโชว์หน้าจอฝั่งลูกค้า
+        window.addEventListener('storage', function(e) {
+            if(e.key === 'pos_current_cart' || e.key === 'pos_show_qr') {
+                if(window.posState.currentView === 'customer_display') {
+                    window.updateCustomerDisplay();
+                }
+            }
+        });
 
     </script>
 </body>
