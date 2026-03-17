@@ -40,7 +40,8 @@
             @page { margin: 0; } 
         }
         
-        .view-section { display: none; height: 100%; flex-direction: column; }
+        /* แก้ไข Flexbox เพื่อไม่ให้ Content ตกขอบ */
+        .view-section { display: none; flex: 1 1 0%; flex-direction: column; min-height: 0; }
         .view-section.active { display: flex; }
         
         .bg-gradient { background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); }
@@ -147,9 +148,9 @@
             </div>
         </header>
 
-        <div id="view-pos" class="view-section active p-2 md:p-4">
-            <div class="flex flex-col lg:flex-row h-full gap-4 overflow-y-auto lg:overflow-hidden pb-10 lg:pb-0">
-                <div class="flex-1 flex flex-col bg-white rounded-xl shadow-sm border min-h-[60vh] lg:min-h-0 lg:h-full overflow-hidden shrink-0 relative">
+        <div id="view-pos" class="view-section active p-2 md:p-4 overflow-hidden">
+            <div class="flex flex-col lg:flex-row flex-1 min-h-0 gap-4 overflow-y-auto lg:overflow-hidden pb-12 lg:pb-0">
+                <div class="flex-1 flex flex-col bg-white rounded-xl shadow-sm border min-h-[60vh] lg:min-h-0 overflow-hidden shrink-0 relative">
                     
                     <!-- แจ้งเตือนออเดอร์ในหน้า POS -->
                     <div id="pos-approval-section" class="hidden flex-col gap-2 p-3 pb-0 shrink-0 border-b bg-orange-50/30">
@@ -177,12 +178,12 @@
                     <div class="p-3 overflow-y-auto flex-1 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 content-start" id="pos-product-grid"></div>
                 </div>
 
-                <div class="w-full lg:w-[350px] bg-white rounded-xl shadow-sm border flex flex-col min-h-[50vh] lg:min-h-0 lg:h-full shrink-0">
+                <div class="w-full lg:w-[350px] xl:w-[400px] bg-white rounded-xl shadow-sm border flex flex-col min-h-[60vh] lg:min-h-0 shrink-0">
                     <div class="p-4 border-b bg-[#f8fafc] flex justify-between items-center shrink-0">
                         <h2 class="font-bold text-gray-700"><i class="fa-solid fa-cart-shopping text-cyan-500 mr-2"></i>ออเดอร์ปัจจุบัน</h2>
                         <button onclick="clearCart()" class="text-sm text-red-500 hover:text-red-700 font-medium"><i class="fa-solid fa-trash mr-1"></i>ล้าง</button>
                     </div>
-                    <div id="pos-cart-items" class="flex-1 overflow-y-auto p-3 space-y-2"></div>
+                    <div id="pos-cart-items" class="flex-1 overflow-y-auto p-3 space-y-2 min-h-[200px]"></div>
                     <div class="p-4 border-t bg-gray-50 shrink-0">
                         <div class="flex justify-between mb-4 text-2xl font-bold text-gray-800">
                             <span>ยอดชำระ</span>
@@ -207,7 +208,7 @@
 
         <!-- View: Admin Dashboard -->
         <div id="view-admin" class="view-section p-2 md:p-4 overflow-y-auto">
-            <div class="bg-white rounded-xl shadow-sm border mb-6 flex flex-col overflow-hidden">
+            <div class="bg-white rounded-xl shadow-sm border mb-6 flex flex-col shrink-0">
                 <div class="p-3 border-b border-gray-100 flex flex-wrap gap-2 justify-between items-center text-sm text-gray-600 bg-gray-50/50">
                     <div class="flex items-center gap-2 border rounded-md px-3 py-1.5 bg-white shadow-sm flex-wrap">
                         <i class="fa-regular fa-calendar text-emerald-500"></i>
@@ -238,11 +239,11 @@
                 </div>
                 <div class="p-5 border-t border-gray-100">
                     <div class="flex justify-between items-center mb-6"><span class="font-bold text-gray-700 text-sm">แนวโน้มยอดขาย</span></div>
-                    <div class="h-72 w-full relative"><canvas id="salesChart"></canvas></div>
+                    <div class="w-full relative" style="height: 300px;"><canvas id="salesChart"></canvas></div>
                 </div>
             </div>
             
-            <div class="bg-white rounded-xl border shadow-sm flex flex-col">
+            <div class="bg-white rounded-xl border shadow-sm flex flex-col shrink-0">
                 <div class="p-4 border-b bg-gray-50 font-bold text-gray-800"><i class="fa-solid fa-list mr-2 text-cyan-600"></i> ประวัติรายการออเดอร์ทั้งหมด</div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm border-b min-w-[700px]">
@@ -262,8 +263,8 @@
         </div>
 
         <div id="view-products" class="view-section p-2 md:p-4 overflow-y-auto">
-            <div class="bg-white rounded-xl border shadow-sm mb-6 flex flex-col">
-                <div class="p-4 border-b flex justify-between items-center bg-gray-50 gap-2 shrink-0 flex-wrap">
+            <div class="bg-white rounded-xl border shadow-sm mb-6 flex flex-col shrink-0">
+                <div class="p-4 border-b flex justify-between items-center bg-gray-50 gap-2 flex-wrap">
                     <h2 class="font-bold text-lg text-gray-800"><i class="fa-solid fa-boxes-stacked mr-2 text-emerald-500"></i> จัดการสินค้า / เมนู</h2>
                     <div class="flex gap-2">
                         <button onclick="document.getElementById('import_csv_input').click()" class="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-gray-50 transition flex items-center"><i class="fa-solid fa-file-import mr-1.5"></i> นำเข้า CSV</button>
@@ -289,7 +290,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl border shadow-sm flex flex-col">
+            <div class="bg-white rounded-xl border shadow-sm flex flex-col shrink-0">
                 <div class="p-4 border-b flex justify-between items-center bg-gray-50 gap-2 shrink-0">
                     <h2 class="font-bold text-lg text-gray-800"><i class="fa-solid fa-tags mr-2 text-cyan-500"></i> จัดการหมวดหมู่</h2>
                     <div class="flex gap-2">
@@ -611,12 +612,12 @@
 
     <!-- Checkout Modal -->
     <div id="modal-checkout" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[110] backdrop-blur-sm p-4">
-        <div class="bg-white rounded-2xl w-full max-w-[400px] p-0 shadow-2xl relative overflow-hidden flex flex-col">
-            <div class="bg-gradient text-white p-4 flex justify-between items-center shrink-0">
+        <div class="bg-white rounded-2xl w-full max-w-[400px] p-0 shadow-2xl relative overflow-hidden flex flex-col max-h-[95vh]">
+            <div class="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white p-4 flex justify-between items-center shrink-0">
                 <h3 class="text-lg font-bold">ยืนยันการรับชำระเงิน</h3>
                 <button onclick="closeModal('modal-checkout')" class="text-white hover:text-red-200"><i class="fa-solid fa-xmark fa-lg"></i></button>
             </div>
-            <div class="p-6 text-center overflow-y-auto bg-white relative">
+            <div class="p-6 text-center overflow-y-auto bg-white relative flex-1">
                 <p class="text-gray-500 mb-1">ยอดที่ต้องชำระสุทธิ</p>
                 <p class="text-5xl font-extrabold text-emerald-600 mb-6 drop-shadow-sm">฿<span id="modal-checkout-total">0.00</span></p>
 
@@ -631,13 +632,13 @@
                 </label>
 
                 <div id="checkout-buttons" class="space-y-3">
-                    <button onclick="generatePromptPayQR()" class="w-full border-2 border-cyan-500 text-cyan-600 hover:bg-cyan-50 font-bold py-4 rounded-xl text-lg transition flex justify-center items-center">
+                    <button onclick="generatePromptPayQR()" class="w-full border-2 border-cyan-500 text-cyan-600 hover:bg-cyan-50 font-bold py-4 rounded-xl text-lg transition flex justify-center items-center shadow-sm">
                         <i class="fa-solid fa-qrcode mr-2"></i> สร้าง QR พร้อมเพย์ / โอนเงิน
                     </button>
-                    <button onclick="showCashSection()" class="w-full bg-gray-100 hover:bg-emerald-50 text-gray-700 hover:text-emerald-600 border border-gray-300 font-bold py-4 rounded-xl text-lg transition flex justify-center items-center">
+                    <button onclick="showCashSection()" class="w-full bg-gray-100 hover:bg-emerald-50 text-gray-700 hover:text-emerald-600 border border-gray-300 font-bold py-4 rounded-xl text-lg transition flex justify-center items-center shadow-sm">
                         <i class="fa-solid fa-coins mr-2"></i> รับเป็นเงินสด
                     </button>
-                    <button onclick="processCheckout('pending')" class="w-full bg-orange-100 text-orange-600 border border-orange-300 font-bold py-3 rounded-xl transition flex justify-center items-center mt-2">
+                    <button onclick="processCheckout('pending')" class="w-full bg-orange-100 text-orange-600 hover:bg-orange-200 border border-orange-300 font-bold py-3 rounded-xl transition flex justify-center items-center mt-2 shadow-sm">
                         <i class="fa-solid fa-clock mr-2"></i> บันทึกออเดอร์ (ค้างชำระ)
                     </button>
                 </div>
@@ -736,11 +737,11 @@
         window.salesChartInstance = null;
 
         const today = new Date();
-        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        const firstDay = new Date();
+        firstDay.setDate(today.getDate() - 14); // ดึงข้อมูล 14 วันย้อนหลัง
         
         let filterStartDate = getLocalDateStr(firstDay);
-        let filterEndDate = getLocalDateStr(lastDay);
+        let filterEndDate = getLocalDateStr(today);
 
         let unsubscribeListeners = [];
         const initAuth = async () => {
@@ -862,28 +863,28 @@
             unsubscribeListeners.push(onSnapshot(publicPath('products'), (snap) => {
                 window.posState.products = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderProducts();
-                if(window.posState.currentView === 'products') renderAdminProducts();
+                if(window.posState.currentView === 'products') window.renderAdminProducts();
             }, e => console.error("Firebase error:", e)));
 
             unsubscribeListeners.push(onSnapshot(publicPath('tables'), (snap) => {
                 window.posState.tables = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderTables();
-                if(window.posState.currentView === 'tables') renderTablesAdmin();
+                if(window.posState.currentView === 'tables') window.renderTablesAdmin();
             }, e => console.error("Firebase error:", e)));
 
             unsubscribeListeners.push(onSnapshot(publicPath('orders'), (snap) => {
                 window.posState.orders = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 checkPendingCustomerOrders();
                 if(window.posState.currentView === 'kitchen') renderKitchen();
-                if(window.posState.currentView === 'admin') renderAdminDashboard();
-                if(window.posState.currentView === 'receipts') renderReceipts();
+                if(window.posState.currentView === 'admin') window.renderAdminDashboard();
+                if(window.posState.currentView === 'receipts') window.renderReceipts();
                 const ls = document.getElementById('loading-screen');
                 if(ls) ls.style.display = 'none';
             }, e => console.error("Firebase error:", e)));
             
             unsubscribeListeners.push(onSnapshot(publicPath('members'), (snap) => {
                 window.posState.members = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                if(window.posState.currentView === 'settings') renderMembersAdmin();
+                if(window.posState.currentView === 'settings') window.renderMembersAdmin();
             }, e => console.error("Firebase error:", e)));
 
             unsubscribeListeners.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), (docSnap) => {
@@ -921,6 +922,7 @@
             const targetView = document.getElementById(`view-${viewId}`);
             if(targetView) { 
                 targetView.classList.add('active'); 
+                // เพิ่มคลาส flex เสมอยกเว้น 3 หน้าต่างนี้
                 if(viewId !== 'customer' && viewId !== 'customer_display' && viewId !== 'login') {
                     targetView.classList.add('flex'); 
                 }
@@ -942,12 +944,12 @@
             
             if(viewId === 'pos') { renderTables(); renderProducts(); renderCart(); checkPendingCustomerOrders(); }
             if(viewId === 'kitchen') renderKitchen();
-            if(viewId === 'admin') renderAdminDashboard();
-            if(viewId === 'products') { renderAdminProducts(); renderAdminCategories(); }
-            if(viewId === 'receipts') renderReceipts();
-            if(viewId === 'tables') renderTablesAdmin();
-            if(viewId === 'settings') renderMembersAdmin();
-            if(viewId === 'customer') { renderCustomerView(); renderCustomerCart(); }
+            if(viewId === 'admin') window.renderAdminDashboard();
+            if(viewId === 'products') { window.renderAdminProducts(); window.renderAdminCategories(); }
+            if(viewId === 'receipts') window.renderReceipts();
+            if(viewId === 'tables') window.renderTablesAdmin();
+            if(viewId === 'settings') window.renderMembersAdmin();
+            if(viewId === 'customer') { window.renderCustomerView(); window.renderCustomerCart(); }
             if(viewId === 'customer_display') window.updateCustomerDisplay();
         }
 
@@ -1158,7 +1160,6 @@
             const tableId = String(document.getElementById('pos-table').value);
             window.posState.currentTableId = tableId;
             const pendingOrder = window.posState.orders.find(o => String(o.table_id) === tableId && o.status === 'pending');
-            // เวลาดึงออเดอร์มา ให้แสดงเฉพาะไอเทมที่อนุมัติแล้ว (status === 'pending' หรือ 'served' หรือ 'cooking')
             if (pendingOrder && Array.isArray(pendingOrder.items)) {
                 window.posState.cart = pendingOrder.items.filter(i => i.status !== 'waiting');
             } else {
@@ -1169,23 +1170,23 @@
         };
 
         window.addToCart = (id, name, price) => {
-            let item = window.posState.cart.find(i => i.id === id);
+            let item = window.posState.cart.find(i => i.id === id && i.name === name);
             if (item) item.qty += 1; else window.posState.cart.push({ id, name, price: parseFloat(price), qty: 1 });
-            if(window.posState.currentView === 'customer') renderCustomerCart(); else renderCart();
+            if(window.posState.currentView === 'customer') window.renderCustomerCart(); else renderCart();
             syncCartToLocal();
         };
 
         window.updateQty = (index, change) => {
             window.posState.cart[index].qty += change;
             if (window.posState.cart[index].qty <= 0) window.posState.cart.splice(index, 1);
-            if(window.posState.currentView === 'customer') renderCustomerCart(); else renderCart();
+            if(window.posState.currentView === 'customer') window.renderCustomerCart(); else renderCart();
             syncCartToLocal();
         };
 
         window.clearCart = () => { 
             window.posState.cart = []; 
             renderCart(); 
-            if(window.posState.currentView === 'customer') renderCustomerCart(); 
+            if(window.posState.currentView === 'customer') window.renderCustomerCart(); 
             syncCartToLocal();
             localStorage.removeItem('pos_show_qr');
         };
@@ -1445,7 +1446,6 @@
             let waitingItems = [];
             
             window.posState.orders.forEach(o => {
-                // เพิ่มเช็ค Array เพื่อป้องกัน error ข้อมูลใน firebase บางบิลไม่สมบูรณ์
                 if(o.status === 'pending' && Array.isArray(o.items)) {
                     o.items.forEach((item, idx) => {
                         if(item.status === 'waiting') {
@@ -1781,7 +1781,7 @@
             if(select) select.value = order.table_id;
             window.posState.cart = Array.isArray(order.items) ? order.items.filter(i => i.status !== 'waiting') : [];
             renderCart();
-            switchView('pos');
+            window.switchView('pos');
             window.openCheckoutModal();
         };
 
