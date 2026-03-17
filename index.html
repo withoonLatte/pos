@@ -379,8 +379,11 @@
             <p class="text-center text-sm opacity-95 bg-black/15 inline-block px-3 py-1 rounded-full mx-auto table shadow-inner"><i class="fa-solid fa-location-dot mr-1"></i> โต๊ะที่นั่ง: <span id="customer-table-name">-</span></p>
         </div>
         <div class="p-3 bg-white border-b flex gap-2 overflow-x-auto shrink-0 scrollbar-hide shadow-sm" id="customer-categories"></div>
-        <div class="p-4 space-y-3 flex-1 overflow-y-auto content-start pb-32" id="customer-products"></div>
+        <div class="p-4 space-y-3 flex-1 overflow-y-auto content-start pb-48" id="customer-products"></div>
+        
+        <!-- ส่วนแสดงตะกร้าในจอลูกค้า -->
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-[0_-5px_20px_rgba(0,0,0,0.15)] z-20 rounded-t-3xl">
+            <div id="customer-cart-items" class="mb-3 space-y-1.5 max-h-36 overflow-y-auto hidden scrollbar-hide border-b border-gray-100 pb-3 px-1"></div>
             <div class="flex justify-between items-center px-2">
                 <div>
                     <span class="text-sm text-gray-500 font-medium">ยอดรวมทั้งหมด</span>
@@ -626,6 +629,7 @@
                     <span>วันที่: <span id="rd-date" class="font-medium text-gray-800"></span></span>
                     <span>โต๊ะ: <span id="rd-table" class="font-medium text-gray-800"></span></span>
                 </div>
+                <div class="text-gray-500 mb-2 border-b pb-2">พนักงาน: <span id="rd-staff" class="font-medium text-gray-800"></span></div>
                 <div id="rd-items" class="space-y-2 mb-4 mt-2"></div>
                 <div class="border-t border-dashed border-gray-300 pt-3 flex justify-between items-center text-lg mt-4">
                     <span class="font-bold text-gray-700">ยอดรวมทั้งหมด:</span>
@@ -661,7 +665,6 @@
             cart: [], currentTableId: "0", currentView: 'pos'
         };
 
-        // ตั้งค่าตัวกรองวันที่เริ่มต้นให้อยู่ในเดือนปัจจุบัน
         const today = new Date();
         const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
         const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
@@ -698,7 +701,6 @@
         window.onload = () => {
             initAuth();
             
-            // Set Default Dates to inputs
             if(document.getElementById('admin-start-date')) document.getElementById('admin-start-date').value = filterStartDate;
             if(document.getElementById('admin-end-date')) document.getElementById('admin-end-date').value = filterEndDate;
             if(document.getElementById('receipt-start-date')) document.getElementById('receipt-start-date').value = filterStartDate;
@@ -713,7 +715,6 @@
             } else if (viewParam === 'customer_display') {
                 showView('customer_display');
             } else {
-                // Check Login Status
                 const isLoggedIn = localStorage.getItem('pos_logged_in');
                 if (!isLoggedIn) {
                     showView('login');
@@ -882,7 +883,6 @@
             if(forceClose) sb.classList.add('hidden'); else sb.classList.toggle('hidden');
         };
 
-        // --- ฟังก์ชันช่วยเหลือสำหรับ CSV Export ---
         window.exportCSV = (filename, headers, rows) => {
             let csvContent = "\uFEFF" + headers.join(",") + "\n";
             rows.forEach(row => {
@@ -923,7 +923,6 @@
             window.posState.products.forEach(p => {
                 if(currentFilter !== 'all' && p.category_id !== currentFilter) return;
                 
-                // รูปภาพ
                 let imgHtml = '';
                 if (p.image) {
                     imgHtml = `<img src="${p.image}" class="w-16 h-16 rounded-xl object-cover shadow-sm mr-3 border border-gray-100 shrink-0">`;
@@ -932,8 +931,7 @@
                 }
 
                 if(window.posState.currentView === 'customer') {
-                    // แบบลิสต์ยาวในจอลูกค้า
-                    let safeVariants = p.variants ? String(p.variants).replace(/"/g, '&quot;') : '{}';
+                    let safeVariants = p.variants ? JSON.stringify(p.variants).replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '{}';
                     html += `
                     <div data-cat="${p.category_id}" class="product-item flex items-center justify-between border-b pb-4 pt-2 group">
                         ${imgHtml}
@@ -944,8 +942,7 @@
                         <button onclick="selectProductVariant('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${safeVariants}')" class="bg-cyan-50 text-cyan-600 border border-cyan-200 hover:bg-gradient-to-r hover:from-emerald-500 hover:to-cyan-500 hover:text-white w-12 h-12 rounded-full flex items-center justify-center transition shadow-sm font-bold text-xl shrink-0 group-hover:scale-105">+</button>
                     </div>`;
                 } else {
-                    // แบบการ์ดใน POS
-                    let safeVariants = p.variants ? String(p.variants).replace(/"/g, '&quot;') : '{}';
+                    let safeVariants = p.variants ? JSON.stringify(p.variants).replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '{}';
                     let imgHtmlGrid = p.image 
                         ? `<img src="${p.image}" class="w-14 h-14 rounded-full mb-3 object-cover shadow-sm group-hover:scale-110 transition border border-gray-100">`
                         : `<div class="w-14 h-14 rounded-full mb-3 flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition bg-emerald-400"><i class="fa-solid fa-utensils text-xl"></i></div>`;
@@ -962,7 +959,6 @@
             if(grid) grid.innerHTML = html;
         }
 
-        // ระบบจัดการ Variants
         window.selectProductVariant = (id, name, basePrice, variantsJsonStr) => {
             try {
                 let variantsData = { single: [], multiple: [] };
@@ -1191,7 +1187,6 @@
             const ppSec = document.getElementById('pp-section');
             ppSec.classList.remove('hidden'); ppSec.classList.add('flex');
             
-            // สั่งให้จอฝั่งลูกค้าแสดง QR Code
             localStorage.setItem('pos_show_qr', JSON.stringify({ url: qrUrl, total: total.toFixed(2) }));
             if(window.posState.currentView === 'customer_display') window.updateCustomerDisplay();
         };
@@ -1805,8 +1800,33 @@
         function renderCustomerCart() {
             let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
             let count = window.posState.cart.reduce((s, i) => s + i.qty, 0);
+            
             if(document.getElementById('customer-cart-total')) document.getElementById('customer-cart-total').innerText = total.toFixed(2);
             if(document.getElementById('customer-cart-count')) document.getElementById('customer-cart-count').innerText = count;
+
+            const custContainer = document.getElementById('customer-cart-items');
+            if (custContainer) {
+                if (window.posState.cart.length === 0) {
+                    custContainer.innerHTML = '';
+                    custContainer.classList.add('hidden');
+                } else {
+                    custContainer.classList.remove('hidden');
+                    let html = '';
+                    window.posState.cart.forEach((item, index) => {
+                        let itemTotal = item.price * item.qty;
+                        html += `
+                        <div class="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-xl text-sm border border-gray-100">
+                            <div class="flex-1 text-gray-700 font-medium leading-tight">
+                                ${item.name} 
+                                <div class="text-xs text-emerald-600 font-bold mt-0.5">฿${item.price.toFixed(2)} <span class="text-gray-400 font-normal ml-1">x${item.qty}</span></div>
+                            </div>
+                            <div class="font-extrabold text-gray-800 ml-2">฿${itemTotal.toFixed(2)}</div>
+                            <button onclick="updateQty(${index}, -1)" class="ml-3 w-8 h-8 flex items-center justify-center bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition"><i class="fa-solid fa-minus"></i></button>
+                        </div>`;
+                    });
+                    custContainer.innerHTML = html;
+                }
+            }
         }
 
         window.submitCustomerOrder = async () => {
@@ -1841,16 +1861,77 @@
         };
 
         window.installDemoData = async () => {
-            if(!confirm('คำเตือน: นี่จะเป็นการเพิ่มข้อมูลตัวอย่าง (โต๊ะและสินค้า) ยืนยันหรือไม่?')) return;
+            if(!confirm('คำเตือน: ข้อมูลสินค้า หมวดหมู่ และโต๊ะเดิม จะถูกเพิ่มข้อมูลใหม่เข้าไป ยืนยันหรือไม่?')) return;
+            
+            document.getElementById('loading-screen').style.display = 'flex';
+            document.querySelector('#loading-screen h2').innerText = 'กำลังสร้างชุดข้อมูล Demo...';
+
             try {
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), { shop_name: 'CDZ POS Realtime' });
-                await addDoc(publicPath('categories'), { name: 'อาหารจานเดียว' });
-                await addDoc(publicPath('products'), { name: 'ข้าวกะเพราหมูกรอบ', category_id: 'all', price: 60, cost: 30, stock: 100 });
-                await addDoc(publicPath('products'), { name: 'ข้าวผัดหมู', category_id: 'all', price: 50, cost: 20, stock: 100 });
-                await addDoc(publicPath('tables'), { name: 'โต๊ะ 1', status: 'free' });
-                await addDoc(publicPath('tables'), { name: 'โต๊ะ 2', status: 'free' });
-                Swal.fire('ลงข้อมูลสำเร็จ', 'รีเฟรชหน้าเว็บเพื่อดูผลลัพธ์', 'success').then(()=>location.reload());
-            } catch(e) { Swal.fire('Error', e.message, 'error'); }
+                
+                const catFoodRef = await addDoc(publicPath('categories'), { name: 'อาหารคาว' });
+                const catDessertRef = await addDoc(publicPath('categories'), { name: 'ของหวาน' });
+                const catDrinkRef = await addDoc(publicPath('categories'), { name: 'เครื่องดื่ม' });
+                
+                const foods = [
+                    'ข้าวกะเพราหมูสับ', 'ผัดไทยกุ้งสด', 'ต้มยำกุ้งน้ำข้น', 'ข้าวผัดปู', 'ส้มตำไทย', 
+                    'คอหมูย่าง', 'ไก่ย่าง', 'น้ำตกหมู', 'ลาบหมู', 'ข้าวหมูแดง', 
+                    'ข้าวหมูกรอบ', 'สุกี้น้ำหมู', 'สุกี้แห้งทะเล', 'ราดหน้าทะเล', 'ผัดซีอิ๊วหมู', 
+                    'ข้าวไข่เจียวหมูสับ', 'ต้มข่าไก่', 'แกงเขียวหวานไก่', 'ยำวุ้นเส้นหมูสับ', 'ปลากะพงทอดน้ำปลา'
+                ];
+                
+                const desserts = [
+                    'บิงซูมะม่วง', 'ไอศกรีมกะทิสด', 'ฮันนี่โทสต์', 'เค้กช็อกโกแลตหน้านิ่ม', 'ชีสเค้กหน้าไหม้', 
+                    'บราวนี่', 'วาฟเฟิลไอศกรีม', 'ข้าวเหนียวมะม่วง', 'ทับทิมกรอบ', 'บัวลอยไข่หวาน'
+                ];
+                
+                const drinks = [
+                    'ชาไทยเย็น', 'ชาเขียวเย็น', 'ชามะนาว', 'อเมริกาโน่เย็น', 'ลาเต้เย็น', 
+                    'คาปูชิโน่เย็น', 'มอคค่าเย็น', 'โกโก้เย็น', 'นมสดปั่น', 'นมชมพู', 
+                    'น้ำแตงโมปั่น', 'น้ำส้มคั้น', 'น้ำมะพร้าวปั่น', 'บลูฮาวายโซดา', 'สตรอว์เบอร์รี่โซดา'
+                ];
+
+                const foodVariants = { single: [], multiple: [{active: true, name: 'ไข่ดาว', price: 10, cost: 4}, {active: true, name: 'พิเศษ', price: 15, cost: 8}] };
+                const drinkVariants = { single: [{active: true, name: 'หวานปกติ', price: 0, cost: 0}, {active: true, name: 'หวานน้อย', price: 0, cost: 0}], multiple: [{active: true, name: 'เพิ่มไข่มุก', price: 5, cost: 2}] };
+
+                const promises = [];
+
+                foods.forEach((name, i) => {
+                    promises.push(addDoc(publicPath('products'), {
+                        name: name, category_id: catFoodRef.id, price: 50 + (i*5), cost: 25 + (i*2), stock: 100,
+                        image: `https://picsum.photos/seed/food${i}/300/300`,
+                        variants: foodVariants
+                    }));
+                });
+
+                desserts.forEach((name, i) => {
+                    promises.push(addDoc(publicPath('products'), {
+                        name: name, category_id: catDessertRef.id, price: 60 + (i*5), cost: 30 + (i*2), stock: 50,
+                        image: `https://picsum.photos/seed/dessert${i}/300/300`,
+                        variants: { single: [], multiple: [] }
+                    }));
+                });
+
+                drinks.forEach((name, i) => {
+                    promises.push(addDoc(publicPath('products'), {
+                        name: name, category_id: catDrinkRef.id, price: 40 + (i*2), cost: 15 + i, stock: 200,
+                        image: `https://picsum.photos/seed/drink${i}/300/300`,
+                        variants: drinkVariants
+                    }));
+                });
+
+                for(let i=1; i<=5; i++) {
+                    promises.push(addDoc(publicPath('tables'), { name: `โต๊ะ ${i}`, status: 'free' }));
+                }
+
+                await Promise.all(promises);
+                
+                document.getElementById('loading-screen').style.display = 'none';
+                Swal.fire('ลงข้อมูลสำเร็จ', 'เพิ่มรายการอาหาร 45 รายการ พร้อมโต๊ะ 5 ตัวเรียบร้อยแล้ว', 'success').then(()=>location.reload());
+            } catch(e) { 
+                document.getElementById('loading-screen').style.display = 'none';
+                Swal.fire('Error', e.message, 'error'); 
+            }
         };
 
         window.updateCustomerDisplay = () => {
