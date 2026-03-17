@@ -110,7 +110,7 @@
         <nav class="flex-1 py-4 flex flex-col gap-1 overflow-x-hidden">
             <a href="#" onclick="switchView('pos')" id="nav-pos" class="sidebar-item px-6 py-3 flex items-center sidebar-active"><i class="fa-solid fa-cash-register w-6 text-center"></i> <span class="sidebar-text ml-2 whitespace-nowrap">หน้าจอ POS</span></a>
             <a href="#" onclick="switchView('kitchen')" id="nav-kitchen" class="sidebar-item px-6 py-3 flex items-center"><i class="fa-solid fa-fire-burner w-6 text-center"></i> <span class="sidebar-text ml-2 whitespace-nowrap">จอในครัว <span id="nav-kitchen-badge" class="hidden ml-2 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">0</span></span></a>
-            <a href="#" onclick="switchView('admin')" id="nav-admin" class="sidebar-item px-6 py-3 flex items-center"><i class="fa-solid fa-chart-simple w-6 text-center"></i> <span class="sidebar-text ml-2 whitespace-nowrap">สรุปยอดขาย</span></a>
+            <a href="#" onclick="switchView('admin')" id="nav-admin" class="sidebar-item px-6 py-3 flex items-center"><i class="fa-solid fa-chart-simple w-6 text-center"></i> <span class="sidebar-text ml-2 whitespace-nowrap">สรุปยอดขาย (Dashboard)</span></a>
             <a href="#" onclick="switchView('products')" id="nav-products" class="sidebar-item px-6 py-3 flex items-center"><i class="fa-solid fa-boxes-stacked w-6 text-center"></i> <span class="sidebar-text ml-2 whitespace-nowrap">สินค้าและหมวดหมู่</span></a>
             <a href="#" onclick="switchView('receipts')" id="nav-receipts" class="sidebar-item px-6 py-3 flex items-center"><i class="fa-solid fa-file-invoice w-6 text-center"></i> <span class="sidebar-text ml-2 whitespace-nowrap">ประวัติใบเสร็จ</span></a>
             <a href="#" onclick="switchView('tables')" id="nav-tables" class="sidebar-item px-6 py-3 flex items-center"><i class="fa-solid fa-qrcode w-6 text-center"></i> <span class="sidebar-text ml-2 whitespace-nowrap">จัดการโต๊ะ</span></a>
@@ -727,15 +727,20 @@
             cart: [], currentTableId: "0", currentView: 'pos', lastWaitingCount: 0, waitingItems: []
         };
 
-        // ตัวแปรสำหรับ Chart.js
+        // ฟังก์ชันช่วยจัดการเวลา เพื่อไม่ให้การตั้ง Timezone บนเครื่องผู้ใช้เพี้ยน
+        function getLocalDateStr(d) {
+            if (!(d instanceof Date) || isNaN(d)) return '';
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+
         window.salesChartInstance = null;
 
         const today = new Date();
-        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         
-        let filterStartDate = firstDay;
-        let filterEndDate = lastDay;
+        let filterStartDate = getLocalDateStr(firstDay);
+        let filterEndDate = getLocalDateStr(lastDay);
 
         let unsubscribeListeners = [];
         const initAuth = async () => {
@@ -857,7 +862,7 @@
             unsubscribeListeners.push(onSnapshot(publicPath('products'), (snap) => {
                 window.posState.products = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderProducts();
-                renderAdminProducts();
+                if(window.posState.currentView === 'products') renderAdminProducts();
             }, e => console.error("Firebase error:", e)));
 
             unsubscribeListeners.push(onSnapshot(publicPath('tables'), (snap) => {
@@ -869,10 +874,11 @@
             unsubscribeListeners.push(onSnapshot(publicPath('orders'), (snap) => {
                 window.posState.orders = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 checkPendingCustomerOrders();
-                renderKitchen();
+                if(window.posState.currentView === 'kitchen') renderKitchen();
                 if(window.posState.currentView === 'admin') renderAdminDashboard();
                 if(window.posState.currentView === 'receipts') renderReceipts();
-                document.getElementById('loading-screen').style.display = 'none';
+                const ls = document.getElementById('loading-screen');
+                if(ls) ls.style.display = 'none';
             }, e => console.error("Firebase error:", e)));
             
             unsubscribeListeners.push(onSnapshot(publicPath('members'), (snap) => {
@@ -883,20 +889,22 @@
             unsubscribeListeners.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), (docSnap) => {
                 if (docSnap.exists()) {
                     window.posState.settings = docSnap.data();
-                    document.getElementById('header-title').innerText = window.posState.settings.shop_name || 'CDZ POS';
-                    document.getElementById('set-shop-name').value = window.posState.settings.shop_name || '';
-                    document.getElementById('set-promptpay').value = window.posState.settings.promptpay || '';
-                    document.getElementById('set-receipt-footer').value = window.posState.settings.receipt_footer || '';
+                    const shopNameEl = document.getElementById('header-title');
+                    if(shopNameEl) shopNameEl.innerText = window.posState.settings.shop_name || 'CDZ POS';
                     
-                    document.getElementById('set-shop-logo').value = window.posState.settings.shop_logo || '';
+                    if(document.getElementById('set-shop-name')) document.getElementById('set-shop-name').value = window.posState.settings.shop_name || '';
+                    if(document.getElementById('set-promptpay')) document.getElementById('set-promptpay').value = window.posState.settings.promptpay || '';
+                    if(document.getElementById('set-receipt-footer')) document.getElementById('set-receipt-footer').value = window.posState.settings.receipt_footer || '';
+                    if(document.getElementById('set-shop-logo')) document.getElementById('set-shop-logo').value = window.posState.settings.shop_logo || '';
+                    
                     const logoPreview = document.getElementById('logo_preview');
                     const logoCont = document.getElementById('logo_preview_container');
                     if(window.posState.settings.shop_logo && logoPreview) {
                         logoPreview.src = window.posState.settings.shop_logo;
-                        logoCont.classList.remove('hidden');
+                        if(logoCont) logoCont.classList.remove('hidden');
                     } else if(logoPreview) {
                         logoPreview.src = '';
-                        logoCont.classList.add('hidden');
+                        if(logoCont) logoCont.classList.add('hidden');
                     }
                     if(document.getElementById('customer-shop-name')) document.getElementById('customer-shop-name').innerText = window.posState.settings.shop_name || 'CDZ POS';
                 }
@@ -987,7 +995,7 @@
         function renderProducts() {
             let html = '';
             window.posState.products.forEach(p => {
-                if(currentFilter !== 'all' && p.category_id !== currentFilter) return;
+                if(currentFilter !== 'all' && String(p.category_id) !== String(currentFilter)) return;
                 
                 let imgHtml = '';
                 if (p.image) {
@@ -996,8 +1004,9 @@
                     imgHtml = `<div class="w-16 h-16 rounded-xl flex items-center justify-center text-white shadow-sm mr-3 shrink-0 bg-emerald-400"><i class="fa-solid fa-utensils text-xl"></i></div>`;
                 }
 
+                let safeVariants = p.variants ? JSON.stringify(p.variants).replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '{}';
+                
                 if(window.posState.currentView === 'customer') {
-                    let safeVariants = p.variants ? JSON.stringify(p.variants).replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '{}';
                     html += `
                     <div data-cat="${p.category_id}" class="product-item flex items-center justify-between border-b pb-4 pt-2 group">
                         ${imgHtml}
@@ -1008,7 +1017,6 @@
                         <button onclick="selectProductVariant('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${safeVariants}')" class="bg-cyan-50 text-cyan-600 border border-cyan-200 hover:bg-gradient-to-r hover:from-emerald-500 hover:to-cyan-500 hover:text-white w-12 h-12 rounded-full flex items-center justify-center transition shadow-sm font-bold text-xl shrink-0 group-hover:scale-105">+</button>
                     </div>`;
                 } else {
-                    let safeVariants = p.variants ? JSON.stringify(p.variants).replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '{}';
                     let imgHtmlGrid = p.image 
                         ? `<img src="${p.image}" class="w-14 h-14 rounded-full mb-3 object-cover shadow-sm group-hover:scale-110 transition border border-gray-100">`
                         : `<div class="w-14 h-14 rounded-full mb-3 flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition bg-emerald-400"><i class="fa-solid fa-utensils text-xl"></i></div>`;
@@ -1150,8 +1158,8 @@
             const tableId = String(document.getElementById('pos-table').value);
             window.posState.currentTableId = tableId;
             const pendingOrder = window.posState.orders.find(o => String(o.table_id) === tableId && o.status === 'pending');
-            // เวลาดึงออเดอร์มา ให้แสดงเฉพาะไอเทมที่อนุมัติแล้ว (status === 'pending' หรือ 'served')
-            if (pendingOrder) {
+            // เวลาดึงออเดอร์มา ให้แสดงเฉพาะไอเทมที่อนุมัติแล้ว (status === 'pending' หรือ 'served' หรือ 'cooking')
+            if (pendingOrder && Array.isArray(pendingOrder.items)) {
                 window.posState.cart = pendingOrder.items.filter(i => i.status !== 'waiting');
             } else {
                 window.posState.cart = [];
@@ -1179,6 +1187,7 @@
             renderCart(); 
             if(window.posState.currentView === 'customer') renderCustomerCart(); 
             syncCartToLocal();
+            localStorage.removeItem('pos_show_qr');
         };
 
         function renderCart() {
@@ -1188,7 +1197,9 @@
             
             if (window.posState.cart.length === 0) {
                 cont.innerHTML = '<div class="text-center text-gray-400 mt-10 text-sm">ยังไม่มีรายการอาหาร</div>';
-                document.getElementById('pos-cart-total').innerText = '0.00'; return;
+                const tEl = document.getElementById('pos-cart-total');
+                if (tEl) tEl.innerText = '0.00'; 
+                return;
             }
 
             window.posState.cart.forEach((item, i) => {
@@ -1205,7 +1216,8 @@
                 </div>`;
             });
             cont.innerHTML = html;
-            document.getElementById('pos-cart-total').innerText = total.toFixed(2);
+            const tEl = document.getElementById('pos-cart-total');
+            if (tEl) tEl.innerText = total.toFixed(2);
         }
 
         window.togglePrintCheckbox = (checkbox) => {
@@ -1218,56 +1230,70 @@
         window.openCheckoutModal = () => {
             if (window.posState.cart.length === 0) return Swal.fire('ตะกร้าว่าง', 'กรุณาเลือกสินค้าก่อน', 'warning');
             let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
-            document.getElementById('modal-checkout-total').innerText = total.toFixed(2);
+            
+            const totalEl = document.getElementById('modal-checkout-total');
+            if(totalEl) totalEl.innerText = total.toFixed(2);
+            
             document.getElementById('checkout-buttons').classList.remove('hidden');
             document.getElementById('cash-section').classList.add('hidden');
             document.getElementById('cash-section').classList.remove('flex');
             document.getElementById('pp-section').classList.add('hidden');
             document.getElementById('pp-section').classList.remove('flex');
-            document.getElementById('modal-checkout').classList.remove('hidden');
-            document.getElementById('modal-checkout').classList.add('flex');
+            
+            const modal = document.getElementById('modal-checkout');
+            if(modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
         };
 
         window.closeModal = (id) => { 
             if(id === 'modal-checkout') localStorage.removeItem('pos_show_qr');
-            document.getElementById(id).classList.add('hidden'); 
-            document.getElementById(id).classList.remove('flex'); 
+            const modal = document.getElementById(id);
+            if(modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
             
-            // รีโหลดลิสต์ใน modal อนุมัติเผื่อมีการเปลี่ยนแปลง
             if(id === 'approval-modal') window.renderApprovalList();
         };
 
         window.showCashSection = () => {
             document.getElementById('checkout-buttons').classList.add('hidden');
             const cashSec = document.getElementById('cash-section');
-            cashSec.classList.remove('hidden'); cashSec.classList.add('flex');
+            if(cashSec) { cashSec.classList.remove('hidden'); cashSec.classList.add('flex'); }
             let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
-            document.getElementById('cash-received').value = total;
+            
+            const cr = document.getElementById('cash-received');
+            if(cr) cr.value = total;
+            
             window.calculateChange();
-            setTimeout(() => { let input = document.getElementById('cash-received'); input.focus(); input.select(); }, 100);
+            setTimeout(() => { let input = document.getElementById('cash-received'); if(input) { input.focus(); input.select(); } }, 100);
         };
         window.hideCashSection = () => {
-            document.getElementById('cash-section').classList.add('hidden'); document.getElementById('cash-section').classList.remove('flex');
-            document.getElementById('checkout-buttons').classList.remove('hidden');
+            const cashSec = document.getElementById('cash-section');
+            if(cashSec) { cashSec.classList.add('hidden'); cashSec.classList.remove('flex'); }
+            const btns = document.getElementById('checkout-buttons');
+            if(btns) btns.classList.remove('hidden');
         };
         window.setCashAmount = (amt) => {
             let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
             let input = document.getElementById('cash-received');
-            if (amt === 'exact') input.value = total; else input.value = parseFloat(input.value || 0) + amt;
+            if(input) {
+                if (amt === 'exact') input.value = total; 
+                else input.value = parseFloat(input.value || 0) + amt;
+            }
             window.calculateChange();
         };
         window.calculateChange = () => {
             let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
-            let received = parseFloat(document.getElementById('cash-received').value) || 0;
+            let received = parseFloat(document.getElementById('cash-received') ? document.getElementById('cash-received').value : 0) || 0;
             let change = received - total;
             let changeEl = document.getElementById('change-amount');
             let btn = document.getElementById('confirm-cash-btn');
-            if (change < 0) {
-                changeEl.innerText = "เงินไม่พอ"; changeEl.classList.remove('text-gray-800', 'text-emerald-600'); changeEl.classList.add('text-red-500');
-                btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed');
-            } else {
-                changeEl.innerText = "฿" + change.toFixed(2); changeEl.classList.remove('text-red-500', 'text-gray-800'); changeEl.classList.add('text-emerald-600');
-                btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            
+            if(changeEl && btn) {
+                if (change < 0) {
+                    changeEl.innerText = "เงินไม่พอ"; changeEl.classList.remove('text-gray-800', 'text-emerald-600'); changeEl.classList.add('text-red-500');
+                    btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    changeEl.innerText = "฿" + change.toFixed(2); changeEl.classList.remove('text-red-500', 'text-gray-800'); changeEl.classList.add('text-emerald-600');
+                    btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
             }
         };
 
@@ -1276,18 +1302,25 @@
             if(!ppNo) return Swal.fire('ผิดพลาด', 'ยังไม่ได้ตั้งค่าเบอร์พร้อมเพย์', 'error');
             let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
             const qrUrl = `https://promptpay.io/${ppNo}/${total.toFixed(2)}.png`;
-            document.getElementById('modal-pp-img').src = qrUrl;
-            document.getElementById('checkout-buttons').classList.add('hidden');
+            
+            const ppImg = document.getElementById('modal-pp-img');
+            if(ppImg) ppImg.src = qrUrl;
+            
+            const btns = document.getElementById('checkout-buttons');
+            if(btns) btns.classList.add('hidden');
+            
             const ppSec = document.getElementById('pp-section');
-            ppSec.classList.remove('hidden'); ppSec.classList.add('flex');
+            if(ppSec) { ppSec.classList.remove('hidden'); ppSec.classList.add('flex'); }
             
             localStorage.setItem('pos_show_qr', JSON.stringify({ url: qrUrl, total: total.toFixed(2) }));
             if(window.posState.currentView === 'customer_display') window.updateCustomerDisplay();
         };
         
         window.hidePPSection = () => {
-            document.getElementById('pp-section').classList.add('hidden'); document.getElementById('pp-section').classList.remove('flex');
-            document.getElementById('checkout-buttons').classList.remove('hidden');
+            const ppSec = document.getElementById('pp-section');
+            if(ppSec) { ppSec.classList.add('hidden'); ppSec.classList.remove('flex'); }
+            const btns = document.getElementById('checkout-buttons');
+            if(btns) btns.classList.remove('hidden');
             localStorage.removeItem('pos_show_qr');
             if(window.posState.currentView === 'customer_display') window.updateCustomerDisplay();
         };
@@ -1299,7 +1332,8 @@
             let received = total;
             let change = 0;
             if (method === 'cash') {
-                received = parseFloat(document.getElementById('cash-received').value) || total;
+                const cr = document.getElementById('cash-received');
+                received = parseFloat(cr ? cr.value : total) || total;
                 change = received - total;
             }
 
@@ -1309,7 +1343,7 @@
                 status: method === 'pending' ? 'pending' : 'paid',
                 payment_method: method,
                 created_at: new Date().toISOString(),
-                items: window.posState.cart.map(i => ({...i, status: i.status || 'pending'})) // preserve status
+                items: window.posState.cart.map(i => ({...i, status: i.status || 'pending'}))
             };
 
             try {
@@ -1337,7 +1371,8 @@
                     }
                 }
 
-                const isPrintChecked = document.getElementById('toggle-print-receipt').checked;
+                const togglePrint = document.getElementById('toggle-print-receipt');
+                const isPrintChecked = togglePrint ? togglePrint.checked : false;
                 const printItems = [...window.posState.cart];
                 
                 const finishCheckout = () => {
@@ -1346,7 +1381,9 @@
                     window.posState.cart = [];
                     renderCart();
                     syncCartToLocal();
-                    document.getElementById('pos-table').value = "0";
+                    
+                    const posT = document.getElementById('pos-table');
+                    if(posT) posT.value = "0";
                     window.posState.currentTableId = "0";
                 };
 
@@ -1387,12 +1424,17 @@
             }
             html += `</div><div style="text-align: center; font-size: 12px; color: #555; padding-bottom: 20px; white-space: pre-wrap;">${receiptFooter}</div>`;
             
-            document.getElementById('print-area').innerHTML = html;
-            setTimeout(() => { 
-                window.print(); 
+            const pa = document.getElementById('print-area');
+            if(pa) {
+                pa.innerHTML = html;
+                setTimeout(() => { 
+                    window.print(); 
+                    if (typeof callback === 'function') callback(); 
+                    setTimeout(() => { pa.innerHTML = ''; }, 500);
+                }, 500);
+            } else {
                 if (typeof callback === 'function') callback(); 
-                setTimeout(() => { document.getElementById('print-area').innerHTML = ''; }, 500);
-            }, 500);
+            }
         };
 
         // --- ระบบแจ้งเตือนออเดอร์ (Approval System) ---
@@ -1403,7 +1445,8 @@
             let waitingItems = [];
             
             window.posState.orders.forEach(o => {
-                if(o.status === 'pending') {
+                // เพิ่มเช็ค Array เพื่อป้องกัน error ข้อมูลใน firebase บางบิลไม่สมบูรณ์
+                if(o.status === 'pending' && Array.isArray(o.items)) {
                     o.items.forEach((item, idx) => {
                         if(item.status === 'waiting') {
                             waitingCount++;
@@ -1422,12 +1465,14 @@
                 if (b1) b1.classList.remove('hidden');
                 if (b2) { b2.classList.remove('hidden'); b2.classList.add('flex'); }
                 
-                document.getElementById('global-approval-count').innerText = waitingCount;
-                document.getElementById('approval-count').innerText = waitingCount;
+                const gc = document.getElementById('global-approval-count');
+                const ac = document.getElementById('approval-count');
+                if(gc) gc.innerText = waitingCount;
+                if(ac) ac.innerText = waitingCount;
                 
                 if (waitingCount > window.posState.lastWaitingCount) {
                     const bell = document.getElementById('bell-sound');
-                    if(bell) { bell.currentTime = 0; bell.play().catch(e=>console.log(e)); }
+                    if(bell) { bell.currentTime = 0; bell.play().catch(e=>console.log("Auto-play prevented", e)); }
                 }
             } else {
                 if (b1) b1.classList.add('hidden');
@@ -1437,14 +1482,15 @@
             
             window.posState.lastWaitingCount = waitingCount;
             
-            if (!document.getElementById('approval-modal').classList.contains('hidden')) {
+            const amodal = document.getElementById('approval-modal');
+            if (amodal && !amodal.classList.contains('hidden')) {
                 window.renderApprovalList();
             }
         }
 
         window.openApprovalModal = () => {
-            document.getElementById('approval-modal').classList.remove('hidden');
-            document.getElementById('approval-modal').classList.add('flex');
+            const m = document.getElementById('approval-modal');
+            if(m) { m.classList.remove('hidden'); m.classList.add('flex'); }
             window.renderApprovalList();
         };
 
@@ -1471,9 +1517,9 @@
 
         window.approveWaitingItem = async (orderId, itemIndex) => {
             const order = window.posState.orders.find(o => String(o.id) === String(orderId));
-            if(!order) return;
+            if(!order || !Array.isArray(order.items)) return;
             let items = [...order.items];
-            items[itemIndex].status = 'pending'; // เปลี่ยนสถานะเป็นรอทำ (เข้าครัว)
+            items[itemIndex].status = 'pending'; 
             await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', String(orderId)), { items });
             if(window.posState.currentTableId === String(order.table_id)) window.loadTableOrder();
         };
@@ -1481,7 +1527,7 @@
         window.rejectWaitingItem = async (orderId, itemIndex) => {
             if(!confirm('ปฏิเสธและลบรายการนี้?')) return;
             const order = window.posState.orders.find(o => String(o.id) === String(orderId));
-            if(!order) return;
+            if(!order || !Array.isArray(order.items)) return;
             
             let items = [...order.items];
             const rejectedItem = items.splice(itemIndex, 1)[0]; 
@@ -1489,7 +1535,7 @@
             
             if(items.length === 0) {
                 await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', String(orderId)));
-                if(order.table_id !== "0") {
+                if(String(order.table_id) !== "0") {
                     await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tables', String(order.table_id)), {status: 'free'});
                 }
             } else {
@@ -1501,7 +1547,7 @@
         window.approveAllWaiting = async () => {
             const promises = [];
             window.posState.orders.forEach(o => {
-                if(o.status === 'pending') {
+                if(o.status === 'pending' && Array.isArray(o.items)) {
                     let changed = false;
                     let newItems = o.items.map(item => {
                         if(item.status === 'waiting') { changed = true; return {...item, status: 'pending'}; }
@@ -1515,13 +1561,14 @@
             window.loadTableOrder();
         };
 
-        // --- ส่วนการจัดการเข้าครัว ---
         function renderKitchen() {
             const grid = document.getElementById('kitchen-grid');
             if(!grid) return;
             let pendingItemsCount = 0; let html = '';
             
             window.posState.orders.forEach(o => {
+                if(o.status !== 'pending' || !Array.isArray(o.items)) return;
+                
                 const tableName = o.table_id === "0" ? "สั่งกลับบ้าน" : (window.posState.tables.find(t=>String(t.id) === String(o.table_id))?.name || `โต๊ะ ${o.table_id}`);
                 o.items.forEach((item, index) => {
                     if(item.status === 'pending') {
@@ -1550,19 +1597,23 @@
 
         window.markItemDone = async (orderId, itemIndex) => {
             const order = window.posState.orders.find(o => String(o.id) === String(orderId));
-            if(!order) return;
+            if(!order || !Array.isArray(order.items)) return;
             let newItems = [...order.items]; newItems[itemIndex].status = 'served';
             await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', String(orderId)), { items: newItems });
         };
 
         // --- ส่วนของ Dashboard และประวัติยอดขาย ---
         window.exportSales = () => {
-            const startDate = document.getElementById('admin-start-date').value;
-            const endDate = document.getElementById('admin-end-date').value;
+            const startDateStr = document.getElementById('admin-start-date').value || filterStartDate;
+            const endDateStr = document.getElementById('admin-end-date').value || filterEndDate;
+            
+            const startObj = new Date(startDateStr + "T00:00:00");
+            const endObj = new Date(endDateStr + "T23:59:59");
             
             const filteredOrders = window.posState.orders.filter(o => {
-                const od = o.created_at.substring(0, 10);
-                return od >= startDate && od <= endDate && (o.status === 'paid' || o.status === 'cancelled');
+                if (!o.created_at) return false;
+                const d = new Date(o.created_at);
+                return d >= startObj && d <= endObj && (o.status === 'paid' || o.status === 'cancelled');
             });
 
             const headers = ['วันที่/เวลา', 'โต๊ะ', 'ยอดรวม', 'ช่องทางชำระ', 'สถานะ'];
@@ -1576,21 +1627,26 @@
         };
 
         window.renderAdminDashboard = () => {
-            const startDate = document.getElementById('admin-start-date').value || filterStartDate;
-            const endDate = document.getElementById('admin-end-date').value || filterEndDate;
-            filterStartDate = startDate; filterEndDate = endDate;
+            const startDateStr = document.getElementById('admin-start-date').value || filterStartDate;
+            const endDateStr = document.getElementById('admin-end-date').value || filterEndDate;
+            filterStartDate = startDateStr; filterEndDate = endDateStr;
+
+            const startObj = new Date(startDateStr + "T00:00:00");
+            const endObj = new Date(endDateStr + "T23:59:59");
 
             let rev = 0, ordCount = 0, ref = 0;
             let dailySales = {};
 
             const filteredOrders = window.posState.orders.filter(o => {
-                const od = o.created_at.substring(0, 10);
-                return od >= startDate && od <= endDate;
+                if (!o.created_at) return false;
+                const d = new Date(o.created_at);
+                return d >= startObj && d <= endObj;
             });
 
             filteredOrders.forEach(o => {
                 if(o.status === 'paid' || o.status === 'cancelled') {
-                    const od = o.created_at.substring(0, 10);
+                    const orderDate = new Date(o.created_at);
+                    const od = getLocalDateStr(orderDate);
                     if(!dailySales[od]) dailySales[od] = 0;
                     
                     if(o.status === 'paid') {
@@ -1610,7 +1666,6 @@
                 document.getElementById('dash-net').innerText = (rev - ref).toLocaleString(undefined, {minimumFractionDigits:2});
             }
 
-            // จัดการข้อมูลเพื่อวาดกราฟ
             const sortedDates = Object.keys(dailySales).sort();
             const chartLabels = sortedDates.map(d => {
                 const parts = d.split('-');
@@ -1619,30 +1674,32 @@
             const chartData = sortedDates.map(d => dailySales[d]);
 
             const ctx = document.getElementById('salesChart');
-            if(ctx) {
-                if(window.salesChartInstance) window.salesChartInstance.destroy();
-                window.salesChartInstance = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: chartLabels,
-                        datasets: [{
-                            label: 'ยอดขายสุทธิ',
-                            data: chartData,
-                            borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.15)', borderWidth: 2,
-                            pointBackgroundColor: '#fff', pointBorderColor: '#10b981', pointBorderWidth: 2,
-                            fill: true, tension: 0.3
-                        }]
-                    },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true, grid: { color: '#f1f5f9', drawBorder: false } },
-                            x: { grid: { display: false, drawBorder: false } }
+            if(ctx && typeof Chart !== 'undefined') {
+                try {
+                    if(window.salesChartInstance) window.salesChartInstance.destroy();
+                    window.salesChartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: chartLabels,
+                            datasets: [{
+                                label: 'ยอดขายสุทธิ',
+                                data: chartData,
+                                borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.15)', borderWidth: 2,
+                                pointBackgroundColor: '#fff', pointBorderColor: '#10b981', pointBorderWidth: 2,
+                                fill: true, tension: 0.3
+                            }]
                         },
-                        interaction: { intersect: false, mode: 'index' }
-                    }
-                });
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { beginAtZero: true, grid: { color: '#f1f5f9', drawBorder: false } },
+                                x: { grid: { display: false, drawBorder: false } }
+                            },
+                            interaction: { intersect: false, mode: 'index' }
+                        }
+                    });
+                } catch(e) { console.error("Chart creation error:", e); }
             }
 
             let html = '';
@@ -1653,7 +1710,136 @@
                 html += `<tr class="border-b"><td class="p-3 pl-4 text-xs text-gray-500">${d}</td><td class="p-3 text-center">${tableName}</td><td class="p-3 text-right font-bold text-gray-700">฿${parseFloat(o.total).toFixed(2)}</td><td class="p-3 text-center text-xs">${o.payment_method}</td><td class="p-3 text-center">${statusBadge}</td></tr>`;
             });
             const tb = document.getElementById('dash-orders-table');
-            if(tb) tb.innerHTML = html || '<tr><td colspan="5" class="text-center py-4">ไม่มีข้อมูลในช่วงเวลานี้</td></tr>';
+            if(tb) tb.innerHTML = html || '<tr><td colspan="5" class="text-center py-4 text-gray-400">ไม่มีข้อมูลในช่วงเวลานี้</td></tr>';
+        };
+
+        window.exportReceipts = () => {
+            const startDateStr = document.getElementById('receipt-start-date').value || filterStartDate;
+            const endDateStr = document.getElementById('receipt-end-date').value || filterEndDate;
+            
+            const startObj = new Date(startDateStr + "T00:00:00");
+            const endObj = new Date(endDateStr + "T23:59:59");
+            
+            const filteredOrders = window.posState.orders.filter(o => {
+                if (!o.created_at) return false;
+                const d = new Date(o.created_at);
+                return d >= startObj && d <= endObj;
+            });
+
+            const headers = ['บิล #', 'วันที่/เวลา', 'โต๊ะ', 'ยอดรวม', 'ช่องทางชำระ', 'สถานะ'];
+            const rows = filteredOrders.map(o => {
+                const tableName = o.table_id === "0" ? "กลับบ้าน" : (window.posState.tables.find(t=>String(t.id) === String(o.table_id))?.name || o.table_id);
+                const d = new Date(o.created_at).toLocaleString('th-TH');
+                let status = 'ค้างชำระ';
+                if(o.status === 'paid') status = 'สำเร็จ';
+                else if(o.status === 'cancelled') status = 'ยกเลิก';
+                return [o.id, d, tableName, o.total, o.payment_method, status];
+            });
+            window.exportCSV(`receipts_export_${new Date().getTime()}.csv`, headers, rows);
+        };
+
+        window.renderReceipts = () => {
+            const startDateStr = document.getElementById('receipt-start-date').value || filterStartDate;
+            const endDateStr = document.getElementById('receipt-end-date').value || filterEndDate;
+            
+            const startObj = new Date(startDateStr + "T00:00:00");
+            const endObj = new Date(endDateStr + "T23:59:59");
+            
+            const filteredOrders = window.posState.orders.filter(o => {
+                if (!o.created_at) return false;
+                const d = new Date(o.created_at);
+                return d >= startObj && d <= endObj;
+            });
+
+            let html = '';
+            [...filteredOrders].sort((a,b)=> new Date(b.created_at) - new Date(a.created_at)).forEach(o => {
+                const tableName = o.table_id === "0" ? "กลับบ้าน" : (window.posState.tables.find(t=>String(t.id) === String(o.table_id))?.name || o.table_id);
+                const d = new Date(o.created_at).toLocaleString('th-TH');
+                let statusBadge = o.status === 'paid' ? '<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-xs border border-emerald-200">สำเร็จ</span>' : (o.status === 'pending' ? '<span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs border border-orange-200">ค้างชำระ</span>' : '<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs border border-red-200">ยกเลิกแล้ว</span>');
+                
+                let actions = `<button onclick="viewReceiptDetails('${o.id}')" class="bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white px-2 py-1.5 rounded-lg text-xs font-bold transition mx-1 shadow-sm" title="ดูรายละเอียด"><i class="fa-solid fa-eye"></i></button>`;
+                
+                if(o.status === 'paid') {
+                    actions += `<button onclick="reprintReceipt('${o.id}')" class="bg-gray-100 text-gray-700 hover:bg-gray-600 hover:text-white px-2 py-1.5 rounded-lg text-xs font-bold transition mx-1 shadow-sm" title="ปริ้นซ้ำ"><i class="fa-solid fa-print"></i></button>`;
+                    actions += `<button onclick="refundOrder('${o.id}')" class="bg-red-50 text-red-600 hover:bg-red-500 hover:text-white px-2 py-1.5 rounded-lg text-xs font-bold transition mx-1 shadow-sm" title="ยกเลิกและคืนเงิน"><i class="fa-solid fa-ban"></i></button>`;
+                } else if(o.status === 'pending') {
+                    actions += `<button onclick="payPendingOrder('${o.id}')" class="bg-orange-500 text-white hover:bg-orange-600 px-2 py-1.5 rounded-lg text-xs font-bold transition mx-1 shadow-sm" title="คิดเงิน"><i class="fa-solid fa-hand-holding-dollar"></i> คิดเงิน</button>`;
+                    actions += `<button onclick="deletePendingOrder('${o.id}', '${o.table_id}')" class="bg-red-50 text-red-600 hover:bg-red-500 hover:text-white px-2 py-1.5 rounded-lg text-xs font-bold transition mx-1 shadow-sm" title="ลบรายการ"><i class="fa-solid fa-trash"></i> ลบ</button>`;
+                }
+
+                html += `<tr class="border-b hover:bg-cyan-50 transition"><td class="p-3 text-xs font-bold text-gray-600">#${String(o.id).substring(0,6)}</td><td class="p-3 text-xs text-gray-500">${d}</td><td class="p-3">${tableName}</td><td class="p-3 text-right font-bold text-emerald-600">฿${parseFloat(o.total).toFixed(2)}</td><td class="p-3 text-center">${statusBadge}</td><td class="p-3 text-center whitespace-nowrap">${actions}</td></tr>`;
+            });
+            const tb = document.getElementById('receipts-table');
+            if(tb) tb.innerHTML = html || '<tr><td colspan="6" class="text-center py-10 text-gray-400">ยังไม่มีใบเสร็จในช่วงเวลานี้</td></tr>';
+        };
+
+        window.payPendingOrder = (orderId) => {
+            const order = window.posState.orders.find(o => String(o.id) === String(orderId));
+            if(!order) return;
+            window.posState.currentTableId = order.table_id;
+            const select = document.getElementById('pos-table');
+            if(select) select.value = order.table_id;
+            window.posState.cart = Array.isArray(order.items) ? order.items.filter(i => i.status !== 'waiting') : [];
+            renderCart();
+            switchView('pos');
+            window.openCheckoutModal();
+        };
+
+        window.deletePendingOrder = async (orderId, tableId) => {
+            if(!confirm('ยืนยันการลบรายการค้างชำระนี้?')) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', String(orderId)));
+                
+                if (String(tableId) !== "0") {
+                    const remainingPending = window.posState.orders.filter(o => String(o.table_id) === String(tableId) && o.status === 'pending' && String(o.id) !== String(orderId));
+                    if(remainingPending.length === 0) {
+                        const tableRef = doc(db, 'artifacts', appId, 'public', 'data', 'tables', String(tableId));
+                        await updateDoc(tableRef, { status: 'free' });
+                    }
+                }
+                Swal.fire('สำเร็จ', 'ลบรายการค้างชำระแล้ว', 'success');
+            } catch(e) {
+                Swal.fire('Error', e.message, 'error');
+            }
+        };
+
+        window.viewReceiptDetails = (orderId) => {
+            const order = window.posState.orders.find(o => String(o.id) === String(orderId));
+            if(!order) return;
+            const tableName = order.table_id === "0" ? "กลับบ้าน" : (window.posState.tables.find(t=>String(t.id) === String(order.table_id))?.name || order.table_id);
+            const d = order.created_at ? new Date(order.created_at).toLocaleString('th-TH') : '-';
+            
+            const rid = document.getElementById('rd-id'); if(rid) rid.innerText = '#' + String(orderId).substring(0, 6);
+            const rdate = document.getElementById('rd-date'); if(rdate) rdate.innerText = d;
+            const rtable = document.getElementById('rd-table'); if(rtable) rtable.innerText = tableName;
+            
+            let itemsHtml = '';
+            if(Array.isArray(order.items)) {
+                order.items.forEach(item => { 
+                    let itemTotal = parseFloat(item.price) * parseInt(item.qty); 
+                    itemsHtml += `<div class="flex justify-between items-center"><span class="text-gray-800 font-medium">${item.name} <span class="text-xs text-gray-400 mx-1">x${item.qty}</span></span><span class="font-bold text-gray-600">฿${itemTotal.toFixed(2)}</span></div>`; 
+                });
+            }
+            const ritems = document.getElementById('rd-items'); if(ritems) ritems.innerHTML = itemsHtml;
+            const rtot = document.getElementById('rd-total'); if(rtot) rtot.innerText = '฿' + parseFloat(order.total).toFixed(2);
+            
+            let methodText = order.payment_method === 'qr' ? 'QR Code' : (order.payment_method === 'cash' ? 'เงินสด' : '-');
+            const rmethod = document.getElementById('rd-method'); if(rmethod) rmethod.innerText = methodText;
+            
+            const modal = document.getElementById('modal-receipt-details');
+            if(modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+        };
+
+        window.reprintReceipt = (orderId) => {
+            const order = window.posState.orders.find(o => String(o.id) === String(orderId));
+            if(!order) return Swal.fire('Error', 'ไม่พบข้อมูลใบเสร็จ', 'error');
+            window.printReceipt(order.id, order.items || [], order.total, order.payment_method, order.total, 0, null);
+        };
+
+        window.refundOrder = async (id) => {
+            if(!confirm('ยืนยันการยกเลิกบิลและคืนเงิน?')) return;
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', String(id)), { status: 'cancelled' });
+            Swal.fire('สำเร็จ', 'ทำรายการคืนเงินแล้ว', 'success');
         };
 
         window.exportProducts = () => {
@@ -1971,7 +2157,7 @@
             const t = window.posState.tables.find(x => String(x.id) === String(window.posState.currentTableId));
             document.getElementById('customer-table-name').innerText = t ? t.name : 'โต๊ะ ' + window.posState.currentTableId;
             renderCategories();
-        };
+        }
 
         window.renderCustomerCart = () => {
             let total = window.posState.cart.reduce((s, i) => s + (i.price * i.qty), 0);
@@ -1985,14 +2171,16 @@
                 let sentHtml = '';
                 const pendingOrders = window.posState.orders.filter(o => String(o.table_id) === String(window.posState.currentTableId) && o.status === 'pending');
                 pendingOrders.forEach(o => {
-                    o.items.forEach(item => {
-                        let statusText = item.status === 'pending' ? 'รอทำ' : (item.status === 'cooking' ? 'กำลังทำ' : 'เสิร์ฟแล้ว');
-                        let statusColor = item.status === 'served' ? 'text-emerald-500' : 'text-orange-500';
-                        sentHtml += `<div class="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-xl text-sm border border-gray-100 mb-2">
-                            <div class="flex-1 text-gray-700 font-medium">${item.name} <span class="text-xs text-emerald-600 ml-1">x${item.qty}</span></div>
-                            <div class="text-xs font-bold ${statusColor}">${statusText}</div>
-                        </div>`;
-                    });
+                    if (Array.isArray(o.items)) {
+                        o.items.forEach(item => {
+                            let statusText = item.status === 'pending' ? 'รอทำ' : (item.status === 'cooking' ? 'กำลังทำ' : 'เสิร์ฟแล้ว');
+                            let statusColor = item.status === 'served' ? 'text-emerald-500' : 'text-orange-500';
+                            sentHtml += `<div class="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-xl text-sm border border-gray-100 mb-2">
+                                <div class="flex-1 text-gray-700 font-medium">${item.name} <span class="text-xs text-emerald-600 ml-1">x${item.qty}</span></div>
+                                <div class="text-xs font-bold ${statusColor}">${statusText}</div>
+                            </div>`;
+                        });
+                    }
                 });
                 
                 if (sentHtml !== '') {
@@ -2027,7 +2215,7 @@
                     custContainer.innerHTML = html;
                 }
             }
-        };
+        }
 
         window.submitCustomerOrder = async () => {
             if (window.posState.cart.length === 0) return Swal.fire('ตะกร้าว่าง', 'กรุณาเลือกอาหารก่อน', 'warning');
@@ -2036,13 +2224,15 @@
             
             const newOrder = {
                 table_id: tableId, total: total, status: 'pending', payment_method: 'unpaid', created_at: new Date().toISOString(),
-                items: window.posState.cart.map(i => ({...i, status: 'pending'}))
+                items: window.posState.cart.map(i => ({...i, status: 'waiting'}))
             };
 
             try {
                 const existingOrder = window.posState.orders.find(o => String(o.table_id) === tableId && o.status === 'pending');
                 if(existingOrder) {
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', String(existingOrder.id)), { total: total, items: newOrder.items });
+                    let oldItems = Array.isArray(existingOrder.items) ? existingOrder.items : [];
+                    let mergedItems = oldItems.concat(newOrder.items);
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', String(existingOrder.id)), { total: parseFloat(existingOrder.total || 0) + total, items: mergedItems });
                 } else {
                     await addDoc(publicPath('orders'), newOrder);
                 }
@@ -2053,7 +2243,7 @@
                     await updateDoc(tableRef, { status: 'occupied' });
                 }
 
-                Swal.fire('ส่งออเดอร์แล้ว!', 'พนักงานกำลังเตรียมอาหารให้คุณ', 'success');
+                Swal.fire('ส่งออเดอร์แล้ว!', 'พนักงานกำลังตรวจสอบรายการให้คุณ', 'success');
                 window.posState.cart = [];
                 window.renderCustomerCart();
                 syncCartToLocal();
@@ -2063,9 +2253,9 @@
         window.installDemoData = async () => {
             if(!confirm('คำเตือน: ข้อมูลสินค้า หมวดหมู่ และโต๊ะเดิม จะถูกเพิ่มข้อมูลใหม่เข้าไป ยืนยันหรือไม่?')) return;
             
-            document.getElementById('loading-screen').style.display = 'flex';
-            document.querySelector('#loading-screen h2').innerText = 'กำลังสร้างชุดข้อมูล Demo...';
-
+            const ls = document.getElementById('loading-screen');
+            if (ls) ls.style.display = 'flex';
+            
             try {
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), { shop_name: 'CDZ POS Realtime' });
                 
@@ -2126,10 +2316,10 @@
 
                 await Promise.all(promises);
                 
-                document.getElementById('loading-screen').style.display = 'none';
+                if(ls) ls.style.display = 'none';
                 Swal.fire('ลงข้อมูลสำเร็จ', 'เพิ่มรายการอาหาร 45 รายการ พร้อมโต๊ะ 5 ตัวเรียบร้อยแล้ว', 'success').then(()=>location.reload());
             } catch(e) { 
-                document.getElementById('loading-screen').style.display = 'none';
+                if(ls) ls.style.display = 'none';
                 Swal.fire('Error', e.message, 'error'); 
             }
         };
